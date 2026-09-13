@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xóm trọ Sự Bình - Danh sách phòng trống</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header" id="site-header">
+    <div class="container">
+      <h1>🏠 Xóm trọ Sự Bình</h1>
+      <p>Tìm phòng trọ phù hợp với bạn</p>
+      <div class="header-links">
+        <a class="btn-outline-light" href="/admin">🔑 Đăng nhập quản trị</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Thống kê -->
+  <section class="stats" id="stats">
+    <div class="stat-card">
+      <div class="num" id="stat-total">-</div>
+      <div class="label">Tổng số phòng</div>
+    </div>
+    <div class="stat-card available">
+      <div class="num" id="stat-available">-</div>
+      <div class="label">Phòng trống</div>
+    </div>
+    <div class="stat-card occupied">
+      <div class="num" id="stat-occupied">-</div>
+      <div class="label">Phòng đã ở</div>
+    </div>
+    <div class="stat-card maintenance">
+      <div class="num" id="stat-maintenance">-</div>
+      <div class="label">Đang bảo trì</div>
+    </div>
+  </section>
+
+  <!-- Danh sách phòng -->
+  <main class="container">
+    <div class="section-title">
+      <h2>Danh sách phòng</h2>
+      <span class="muted" id="room-count"></span>
+    </div>
+
+    <div class="spinner" id="loading"></div>
+    <div class="rooms-grid" id="rooms"></div>
+    <p class="center muted hidden" id="empty">Chưa có phòng nào để hiển thị.</p>
+  </main>
+
+  <!-- Liên hệ & Bản đồ -->
+  <section class="container contact-section">
+    <div class="section-title">
+      <h2>📍 Liên hệ & Bản đồ</h2>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-item">
+          <span class="ci-icon">🏠</span>
+          <div>
+            <div class="ci-label">Địa chỉ</div>
+            <div class="ci-value" id="contact-address">Đang tải...</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span class="ci-icon">📞</span>
+          <div>
+            <div class="ci-label">Điện thoại liên hệ</div>
+            <div class="ci-value"><a id="contact-phone" href="#">Đang tải...</a></div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span class="ci-icon">🕐</span>
+          <div>
+            <div class="ci-label">Giờ mở / đóng cửa</div>
+            <div class="ci-value" id="contact-hours">Đang tải...</div>
+          </div>
+        </div>
+        <a class="btn btn-primary btn-map" id="btn-open-map" href="#" target="_blank" rel="noopener">Mở Google Maps</a>
+      </div>
+      <div class="map-box" id="map-box">
+        <div class="map-placeholder">Đang tải bản đồ...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal chi tiết -->
+  <div class="modal-overlay" id="detail-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="detail-title">Chi tiết phòng</h3>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="detail-body">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

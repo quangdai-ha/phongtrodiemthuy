@@ -1,0 +1,27 @@
+# render.yaml — Blueprint deploy lên Render (đăng ký tại https://render.com)
+# Sau khi đưa dự án lên GitHub, truy cập:
+#   https://dashboard.render.com -> New -> Blueprint -> chọn repo này.
+# Render sẽ tự tạo PostgreSQL + Web Service theo cấu hình dưới đây.
+databases:
+  - name: phongtro-db
+    plan: free
+    databaseName: phongtro
+    user: phongtro
+    ipAllowList: [] # allow all
+
+services:
+  - type: web
+    name: phong-tro-su-binh
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: ROOM_MANAGER_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: phongtro-db
+          property: connectionString
