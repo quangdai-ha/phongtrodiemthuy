@@ -13,6 +13,7 @@ services:
   - type: web
     name: phong-tro-su-binh
     runtime: python
+    rootDir: phong_tro_manager
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
