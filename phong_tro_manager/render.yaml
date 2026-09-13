@@ -11,7 +11,7 @@ databases:
 
 services:
   - type: web
-    name: phongtrodiemthuy
+    name: xomtrosubinh
     runtime: python
     rootDir: phong_tro_manager
     plan: free
