@@ -23,8 +23,10 @@ from .auth import hash_password
 from .database import BASE_DIR, SessionLocal, engine, get_db
 from .models import Admin, Base, Room, RoomImage, SiteSettings, StoredFile
 from .routers import auth as auth_router
+from .routers import contact as contact_router
 from .routers import rooms as rooms_router
 from .routers import settings as settings_router
+from .routers import tenants as tenants_router
 
 
 # ---------------------------------------------------------------------------
@@ -92,6 +94,20 @@ SAMPLE_ROOMS = [
 ]
 
 
+DEFAULT_HOUSE_RULES = """1. Tiền thuê thanh toán trước, chậm nhất đến ngày 5 hằng tháng.
+2. Tiền điện, nước được tính theo công tơ riêng của từng phòng (đơn giá theo mục Điện nước).
+3. Giữ yên tĩnh từ 22:00 đến 7:00 — không gây ồn trong phòng và hành lang.
+4. Đón tiếp khách từ 8:00 – 22:00. Khách ngủ lại qua đêm chỉ khi được quản lý đồng ý.
+5. Giữ gìn vệ sinh trong phòng và khu vực chung (bếp, phòng vệ sinh, hành lang).
+6. Cấm hút thuốc trong phòng và trong khuôn viên xóm trọ.
+7. Đổ rác đúng nơi quy định (thùng rác ngoài sân) — phải phân loại rác.
+8. Cấm mở nhạc / TV ồn ào sau 22:00.
+9. Nuôi thú cưng chỉ khi được quản lý đồng ý.
+10. Có hư hỏng, sự cố phải báo quản lý ngay.
+11. Khi chuyển đi: báo trước quản lý ít nhất 2 tuần và thanh toán đủ các hóa đơn cuối cùng.
+12. Nghiêm cấm tàng trữ vũ khí, ma túy và các hành vi vi phạm pháp luật trong khuôn viên xóm trọ."""
+
+
 DEFAULT_SETTINGS = {
     "address": "123 Đường Nguyễn Trãi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh",
     "phone": "0901 234 567",
@@ -99,6 +115,10 @@ DEFAULT_SETTINGS = {
     "map_location": "Nguyễn Trãi, Bến Thành, Quận 1, TP. Hồ Chí Minh",
     "map_embed_url": "",
     "background_image": "",
+    "electricity_price": 3500,
+    "water_price": 20000,
+    "facebook_url": "",
+    "house_rules": DEFAULT_HOUSE_RULES,
 }
 
 
@@ -124,15 +144,23 @@ def _migrate(db):
     insp = inspect(engine)
     if "site_settings" in insp.get_table_names():
         cols = {c["name"] for c in insp.get_columns("site_settings")}
-        if "background_image" not in cols:
-            db.execute(
-                text(
-                    "ALTER TABLE site_settings "
-                    "ADD COLUMN background_image VARCHAR(255) DEFAULT ''"
-                )
-            )
+        for col, ddl in (
+            ("background_image", "VARCHAR(255) DEFAULT ''"),
+            ("electricity_price", "FLOAT DEFAULT 3500"),
+            ("water_price", "FLOAT DEFAULT 20000"),
+            ("facebook_url", "VARCHAR(500) DEFAULT ''"),
+            ("house_rules", "TEXT DEFAULT ''"),
+        ):
+            if col not in cols:
+                db.execute(text(f"ALTER TABLE site_settings ADD COLUMN {col} {ddl}"))
+                print(f"[seed] Đã thêm cột {col} cho site_settings.")
+        db.commit()
+    if "admins" in insp.get_table_names():
+        cols = {c["name"] for c in insp.get_columns("admins")}
+        if "role" not in cols:
+            db.execute(text("ALTER TABLE admins ADD COLUMN role VARCHAR(20) DEFAULT 'admin'"))
             db.commit()
-            print("[seed] Đã thêm cột background_image cho site_settings.")
+            print("[seed] Đã thêm cột role cho admins.")
 
 
 def seed_data():
@@ -178,6 +206,13 @@ def seed_data():
             db.add(SiteSettings(**DEFAULT_SETTINGS))
             db.commit()
             print("[seed] Đã tạo thông tin liên hệ mẫu.")
+        else:
+            # Điền nội quy mặc định nếu vẫn còn trống (bản sao cơ sở dữ liệu cũ)
+            st = db.query(SiteSettings).order_by(SiteSettings.id).first()
+            if st is not None and not (st.house_rules or "").strip():
+                st.house_rules = DEFAULT_HOUSE_RULES
+                db.commit()
+                print("[seed] Đã điền nội quy mặc định.")
     finally:
         db.close()
 
@@ -206,6 +241,8 @@ app.add_middleware(
 app.include_router(auth_router.router)
 app.include_router(rooms_router.router)
 app.include_router(settings_router.router)
+app.include_router(contact_router.router)
+app.include_router(tenants_router.router)
 
 STATIC_DIR = os.path.join(BASE_DIR, "app", "static")
 

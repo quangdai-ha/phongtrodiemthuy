@@ -11,6 +11,7 @@
   <nav class="admin-nav" id="admin-nav">
     <span class="brand">🔐 Xóm trọ Sự Bình</span>
     <div class="right">
+      <span class="nav-user" id="nav-user"></span>
       <a class="btn-view-site" href="/" target="_blank">🌐 Xem trang khách</a>
       <button class="btn-logout" id="btn-logout">Đăng xuất</button>
     </div>
@@ -37,21 +38,170 @@
 
   <!-- Bảng điều khiển -->
   <div id="dashboard" class="hidden">
+    <div class="admin-tabs" id="admin-tabs">
+      <button class="tab-btn active" data-tab="rooms">🏠 Phòng</button>
+      <button class="tab-btn" data-tab="tenants">🧑 Khách trọ</button>
+      <button class="tab-btn" data-tab="bills">⚡ Điện nước</button>
+      <button class="tab-btn" data-tab="contracts">📄 Hợp đồng</button>
+      <button class="tab-btn" data-tab="messages">✉️ Tin nhắn</button>
+      <button class="tab-btn" data-tab="accounts" id="tab-accounts">🔐 Tài khoản</button>
+    </div>
     <main class="container">
-      <div class="admin-toolbar">
-        <h2>Danh sách phòng</h2>
-        <div style="display:flex; gap:0.6rem;">
-          <button class="btn btn-ghost" id="btn-settings">⚙️ Cài đặt liên hệ</button>
-          <button class="btn btn-primary" id="btn-add-room">＋ Thêm phòng</button>
-        </div>
-      </div>
 
-      <div class="spinner" id="loading"></div>
-      <div class="admin-grid" id="rooms"></div>
-      <p class="center muted hidden" id="empty">Chưa có phòng nào. Bấm "Thêm phòng" để bắt đầu.</p>
+      <!-- ===== PHÒNG ===== -->
+      <section class="admin-section active" id="sec-rooms">
+        <div class="admin-toolbar">
+          <h2>Danh sách phòng</h2>
+          <div style="display:flex; gap:0.6rem;">
+            <button class="btn btn-ghost" id="btn-settings">⚙️ Cài đặt liên hệ</button>
+            <button class="btn btn-primary" id="btn-add-room">＋ Thêm phòng</button>
+          </div>
+        </div>
+        <div class="spinner" id="loading"></div>
+        <div class="admin-grid" id="rooms"></div>
+        <p class="center muted hidden" id="empty">Chưa có phòng nào. Bấm "Thêm phòng" để bắt đầu.</p>
+      </section>
+
+      <!-- ===== KHÁCH TRỌ ===== -->
+      <section class="admin-section" id="sec-tenants">
+        <div class="toolbar">
+          <h2>Khách trọ</h2>
+          <div class="inline-filters">
+            <input class="form-control" id="tenant-q" placeholder="🔎 Tìm tên / SĐT..." />
+            <select class="form-control" id="tenant-status">
+              <option value="">Tất cả trạng thái</option>
+              <option value="active">Đang ở</option>
+              <option value="moved_out">Đã chuyển đi</option>
+            </select>
+            <button class="btn btn-primary" id="btn-add-tenant">＋ Thêm khách trọ</button>
+          </div>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tên khách trọ</th><th>SĐT</th><th>Phòng</th><th>Nhận phòng</th><th>Trạng thái</th><th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="tenant-tbody"></tbody>
+          </table>
+        </div>
+        <p class="empty-hint hidden" id="tenant-empty">Chưa có khách trọ nào.</p>
+      </section>
+
+      <!-- ===== ĐIỆN NƯỚC ===== -->
+      <section class="admin-section" id="sec-bills">
+        <div class="toolbar">
+          <h2>Hóa đơn điện nước</h2>
+          <div class="inline-filters">
+            <select class="form-control" id="bill-month"><option value="">Tất cả tháng</option></select>
+            <select class="form-control" id="bill-tenant"><option value="">Tất cả khách</option></select>
+            <button class="btn btn-primary" id="btn-add-bill">＋ Thêm hóa đơn</button>
+          </div>
+        </div>
+        <p class="muted" style="margin-bottom:0.8rem;font-size:0.85rem;">
+          Đơn giá lấy từ ⚙️ Cài đặt: điện <b id="bill-elec-price">3.500đ</b>/kWh, nước <b id="bill-water-price">20.000đ</b>/m³.
+        </p>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tháng</th><th>Khách trọ</th><th>Phòng</th><th>Điện (kWh)</th><th>Nước (m³)</th><th>Tổng</th><th>Trạng thái</th><th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="bill-tbody"></tbody>
+          </table>
+        </div>
+        <p class="empty-hint hidden" id="bill-empty">Chưa có hóa đơn nào.</p>
+      </section>
+
+<!-- ===== HỢP ĐỒNG ===== -->
+      <section class="admin-section" id="sec-contracts">
+        <div class="toolbar">
+          <h2>Hợp đồng thuê phòng</h2>
+          <button class="btn btn-primary" id="btn-add-contract">＋ Thêm hợp đồng</button>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Khách trọ</th><th>Phòng</th><th>Bắt đầu</th><th>Kết thúc</th><th>Cọc</th><th>Tiền thuê / tháng</th><th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="contract-tbody"></tbody>
+          </table>
+        </div>
+        <p class="empty-hint hidden" id="contract-empty">Chưa có hợp đồng nào.</p>
+      </section>
+
+      <!-- ===== TIN NHẮN ===== -->
+      <section class="admin-section" id="sec-messages">
+        <div class="toolbar">
+          <h2>Tin nhắn liên hệ / đặt phòng</h2>
+          <button class="btn btn-ghost" id="btn-reload-messages">🔄 Làm mới</button>
+        </div>
+        <div id="message-list"></div>
+        <p class="empty-hint hidden" id="message-empty">Chưa có tin nhắn nào.</p>
+      </section>
+
+      <!-- ===== TÀI KHOẢN ===== -->
+      <section class="admin-section" id="sec-accounts">
+        <div class="toolbar">
+          <h2>Quản lý tài khoản</h2>
+        </div>
+        <div class="accounts-grid">
+          <div class="data-table-wrap" style="margin-bottom:1.2rem;">
+            <table class="data-table">
+              <thead>
+                <tr><th>#</th><th>Tên đăng nhập</th><th>Vai trò</th><th>Thao tác</th></tr>
+              </thead>
+              <tbody id="admin-tbody"></tbody>
+            </table>
+          </div>
+          <div class="card-form">
+            <h3>＋ Tạo tài khoản mới</h3>
+            <form id="admin-form">
+              <div class="cf-row">
+                <div class="form-group">
+                  <label for="a-username">Tên đăng nhập</label>
+                  <input class="form-control" id="a-username" required />
+                </div>
+                <div class="form-group">
+                  <label for="a-password">Mật khẩu (≥ 6 ký tự)</label>
+                  <input class="form-control" type="password" id="a-password" required minlength="6" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="a-role">Vai trò</label>
+                <select class="form-control" id="a-role">
+                  <option value="staff">Nhân viên (không xóa dữ liệu, không đổi cài đặt, không quản lý tài khoản)</option>
+                  <option value="admin">Quản trị viên (toàn quyền)</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" type="submit">Tạo tài khoản</button>
+            </form>
+          </div>
+          <div class="card-form">
+            <h3>Đổi mật khẩu của tôi</h3>
+            <form id="password-form">
+              <div class="form-group">
+                <label for="p-old">Mật khẩu hiện tại</label>
+                <input class="form-control" type="password" id="p-old" required />
+              </div>
+              <div class="form-group">
+                <label for="p-new">Mật khẩu mới</label>
+                <input class="form-control" type="password" id="p-new" required minlength="6" />
+              </div>
+              <button class="btn btn-primary" type="submit">Đổi mật khẩu</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
+  <!-- Modal tạo / sửa phòng -->
   <!-- Modal tạo / sửa phòng -->
   <div class="modal-overlay" id="form-modal">
     <div class="modal">
@@ -161,13 +311,216 @@
             <div style="margin-top:0.5rem;">
               <button type="button" class="btn btn-ghost btn-sm hidden" id="s-bg-remove">🗑️ Xóa ảnh nền</button>
             </div>
+<p class="muted" style="font-size:0.8rem;">
+                Ảnh này làm nền cho phần tiêu đề trang chủ. Hỗ trợ JPG, PNG, GIF, WebP (tối đa 8MB).
+              </p>
+            </div>
+            <div class="form-group">
+              <label>Hoặc chọn ảnh mặc định</label>
+              <div class="bg-defaults" id="s-bg-defaults">
+                <span class="muted" style="font-size:0.85rem;">Đang tải...</span>
+              </div>
+              <p class="muted" style="font-size:0.8rem;">Nhấn vào một mẫu để đặt làm ảnh nền, rồi bấm «Lưu cài đặt».</p>
+            </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="form-group">
+              <label for="s-elec-price">Đơn giá điện (VNĐ/kWh)</label>
+              <input class="form-control" type="number" id="s-elec-price" min="0" step="100" placeholder="3500" />
+            </div>
+            <div class="form-group">
+              <label for="s-water-price">Đơn giá nước (VNĐ/m³)</label>
+              <input class="form-control" type="number" id="s-water-price" min="0" step="500" placeholder="20000" />
+            </div>
+          </div>
+          <p class="muted" style="font-size:0.8rem; margin-top:-0.4rem;">
+            Đơn giá này dùng để tự tính tiền trong mục ⚡ Điện nước.
+          </p>
+          <div class="form-group">
+            <label for="s-facebook">Link trang Facebook (tùy chọn)</label>
+            <input class="form-control" id="s-facebook" placeholder="VD: https://www.facebook.com/xomtro..." />
+            <p class="muted" style="font-size:0.8rem;">Hiển thị nút Facebook ở mục Liên hệ trên trang chủ.</p>
+          </div>
+          <div class="form-group">
+            <label for="s-rules">📜 Nội quy & Quy định xóm trọ</label>
+            <textarea class="form-control" id="s-rules" rows="10" placeholder="1. Tiền thuê thanh toán trước, chậm nhất đến ngày 5 hằng tháng...&#10;2. ..."></textarea>
             <p class="muted" style="font-size:0.8rem;">
-              Ảnh này làm nền cho phần tiêu đề trang chủ. Hỗ trợ JPG, PNG, GIF, WebP.
+              Mỗi dòng = một điều khoản. Mục «Nội quy &amp; Quy định» sẽ hiển thị trên trang khách.
+              Để trống nếu muốn ẩn mục này.
             </p>
           </div>
           <div style="display:flex; gap:0.8rem; justify-content:flex-end; margin-top:1rem;">
             <button type="button" class="btn btn-ghost" id="settings-cancel">Hủy</button>
             <button type="submit" class="btn btn-primary">Lưu cài đặt</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal khách trọ -->
+  <div class="modal-overlay" id="tenant-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="tenant-form-title">Thêm khách trọ</h3>
+        <button class="modal-close" id="tenant-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="tenant-form">
+          <input type="hidden" id="t-id" />
+          <div class="cf-row">
+            <div class="form-group">
+              <label for="t-name">Họ tên *</label>
+              <input class="form-control" id="t-name" required placeholder="VD: Nguyễn Văn An" />
+            </div>
+            <div class="form-group">
+              <label for="t-phone">Số điện thoại</label>
+              <input class="form-control" id="t-phone" placeholder="VD: 0896 93 2222" />
+            </div>
+          </div>
+          <div class="cf-row">
+            <div class="form-group">
+              <label for="t-room">Phòng</label>
+              <select class="form-control" id="t-room"></select>
+            </div>
+            <div class="form-group">
+              <label for="t-status">Trạng thái</label>
+              <select class="form-control" id="t-status">
+                <option value="active">Đang ở</option>
+                <option value="moved_out">Đã chuyển đi</option>
+              </select>
+            </div>
+          </div>
+          <div class="cf-row">
+            <div class="form-group">
+              <label for="t-checkin">Ngày nhận phòng</label>
+              <input class="form-control" type="date" id="t-checkin" />
+            </div>
+            <div class="form-group">
+              <label for="t-checkout">Ngày trả phòng (tùy chọn)</label>
+              <input class="form-control" type="date" id="t-checkout" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="t-idcard">Số CCCD / CMND</label>
+            <input class="form-control" id="t-idcard" placeholder="VD: 123456789" />
+          </div>
+          <div class="form-group">
+            <label for="t-address">Địa chỉ thường trú</label>
+            <input class="form-control" id="t-address" />
+          </div>
+          <div class="form-group">
+            <label for="t-note">Ghi chú</label>
+            <textarea class="form-control" id="t-note" rows="2"></textarea>
+          </div>
+          <div style="display:flex; gap:0.8rem; justify-content:flex-end; margin-top:1rem;">
+            <button type="button" class="btn btn-ghost" id="tenant-cancel">Hủy</button>
+            <button type="submit" class="btn btn-primary">Lưu khách trọ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal hóa đơn điện nước -->
+  <div class="modal-overlay" id="bill-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="bill-form-title">Thêm hóa đơn điện nước</h3>
+        <button class="modal-close" id="bill-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="bill-form">
+          <input type="hidden" id="b-id" />
+          <div class="cf-row">
+            <div class="form-group">
+              <label for="b-tenant">Khách trọ *</label>
+              <select class="form-control" id="b-tenant" required></select>
+            </div>
+            <div class="form-group">
+              <label for="b-month">Tháng (YYYY-MM) *</label>
+              <input class="form-control" id="b-month" placeholder="VD: 2026-09" />
+            </div>
+          </div>
+          <div class="cf-row">
+            <div class="form-group">
+              <label for="b-elec-old">Chỉ số điện cũ (kWh)</label>
+              <input class="form-control" type="number" id="b-elec-old" min="0" value="0" />
+            </div>
+            <div class="form-group">
+              <label for="b-elec-new">Chỉ số điện mới (kWh)</label>
+              <input class="form-control" type="number" id="b-elec-new" min="0" value="0" />
+            </div>
+          </div>
+          <div class="cf-row">
+            <div class="form-group">
+              <label for="b-water-old">Chỉ số nước cũ (m³)</label>
+              <input class="form-control" type="number" id="b-water-old" min="0" step="0.5" value="0" />
+            </div>
+            <div class="form-group">
+              <label for="b-water-new">Chỉ số nước mới (m³)</label>
+              <input class="form-control" type="number" id="b-water-new" min="0" step="0.5" value="0" />
+            </div>
+          </div>
+          <div class="cf-row">
+            <div class="form-group">
+              <label for="b-other">Phụ phí khác (VNĐ)</label>
+              <input class="form-control" type="number" id="b-other" min="0" step="1000" value="0" />
+            </div>
+            <div class="form-group">
+              <label for="b-note">Ghi chú</label>
+              <input class="form-control" id="b-note" />
+            </div>
+          </div>
+          <p class="muted" style="font-size:0.85rem;">💰 Thành tiền được tự động tính theo đơn giá trong ⚙️ Cài đặt.</p>
+          <div style="display:flex; gap:0.8rem; justify-content:flex-end; margin-top:1rem;">
+            <button type="button" class="btn btn-ghost" id="bill-cancel">Hủy</button>
+            <button type="submit" class="btn btn-primary">Lưu hóa đơn</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+<!-- Modal hợp đồng -->
+  <div class="modal-overlay" id="contract-modal">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="contract-form-title">Thêm hợp đồng</h3>
+        <button class="modal-close" id="contract-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="contract-form">
+          <input type="hidden" id="ct-id" />
+          <div class="form-group">
+            <label for="ct-tenant">Khách trọ *</label>
+            <select class="form-control" id="ct-tenant" required></select>
+          </div>
+          <div class="cf-row">
+            <div class="form-group">
+              <label for="ct-start">Ngày bắt đầu</label>
+              <input class="form-control" type="date" id="ct-start" />
+            </div>
+            <div class="form-group">
+              <label for="ct-end">Ngày kết thúc</label>
+              <input class="form-control" type="date" id="ct-end" />
+            </div>
+          </div>
+          <div class="cf-row">
+            <div class="form-group">
+              <label for="ct-deposit">Tiền cọc (VNĐ)</label>
+              <input class="form-control" type="number" id="ct-deposit" min="0" step="100000" value="0" />
+            </div>
+            <div class="form-group">
+              <label for="ct-rent">Tiền thuê / tháng (VNĐ)</label>
+              <input class="form-control" type="number" id="ct-rent" min="0" step="100000" value="0" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ct-note">Ghi chú điều khoản</label>
+            <textarea class="form-control" id="ct-note" rows="3" placeholder="VD: Đặt cọc 1 tháng, thanh toán tiền trọ vào ngày 5 hằng tháng..."></textarea>
+          </div>
+          <div style="display:flex; gap:0.8rem; justify-content:flex-end; margin-top:1rem;">
+            <button type="button" class="btn btn-ghost" id="contract-cancel">Hủy</button>
+            <button type="submit" class="btn btn-primary">Lưu hợp đồng</button>
           </div>
         </form>
       </div>

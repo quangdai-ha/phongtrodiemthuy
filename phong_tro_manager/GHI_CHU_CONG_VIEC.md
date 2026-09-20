@@ -1,7 +1,7 @@
 # 📒 GHI CHÚ CÔNG VIỆC — Xóm trọ Sự Bình
 
 > File này **lưu trạng thái toàn bộ công việc** để phiên sau tiếp tục hoàn thiện.
-> Cập nhật ngày: **25/08/2026** — đây là bản ghi hiện tại, phần "Việc cần làm tiếp" ở cuối là các hướng chưa làm.
+> Cập nhật ngày: **20/09/2026** — đây là bản ghi hiện tại, phần "Việc cần làm tiếp" ở cuối là các hướng chưa làm.
 
 ---
 
@@ -94,10 +94,10 @@ DB đã có **dữ liệu thật của chủ** (không còn là dữ liệu mẫ
 1. **Đặt ảnh nền trang chủ** cho "Xóm trọ Sự Bình" (admin → ⚙️ Cài đặt → mục Ảnh nền).
 2. **Đặt mật khẩu mới** cho admin (hiện đang là mặc định `admin123`), thêm tài khoản admin khác, hoặc trang đổi mật khẩu.
 3. **Đổi secret** JWT bằng biến môi trường `ROOM_MANAGER_SECRET`.
-4. Thêm **lọc/tìm kiếm** phòng theo giá, diện tích, trạng thái trên trang khách.
-5. Thêm **liên hệ/đặt phòng** qua form (gửi tin nhắn, Zalo, Facebook).
-6. Chức năng **quản lý khách trọ/điện nước/hợp đồng**.
-7. Thêm xác thực **phân quyền chi tiết**, giới hạn upload kích thước ảnh.
+4. ✅ **Đã làm:** lọc/tìm kiếm phòng theo tên, giá, diện tích, trạng thái trên trang khách.
+5. ✅ **Đã làm:** liên hệ/đặt phòng qua form, gọi điện, Zalo, Facebook; admin xem/đọc/xóa tin.
+6. ✅ **Đã làm:** quản lý khách trọ, điện nước (tự tính tiền), hợp đồng.
+7. ✅ **Đã làm:** phân quyền `admin`/`staff`, quản lý tài khoản, đổi mật khẩu, giới hạn ảnh 8MB.
 8. Deploy lên máy chủ (cài `uvicorn` worker, tắt `reload`, HTTPS).
 
 ---
@@ -108,6 +108,7 @@ DB đã có **dữ liệu thật của chủ** (không còn là dữ liệu mẫ
 - ✅ Tất cả API test qua (đăng nhập, CRUD phòng, upload ảnh, settings, upload/xóa ảnh nền, bảo mật URL).
 - ✅ Trang chủ & admin hiển thị đúng tên "Xóm trọ Sự Bình".
 - ✅ Dữ liệu thật nguyên vẹn.
+- ✅ 39/39 smoke test tính năng mới đạt; Edge headless render đủ 6 phòng, bộ lọc và form liên hệ.
 
 ---
 
@@ -133,13 +134,50 @@ DB đã có **dữ liệu thật của chủ** (không còn là dữ liệu mẫ
 - ✅ `POST /api/auth/login` (200), upload ảnh mới (201, lưu vào DB), `GET /uploads/<mới>` đọc từ DB (len đúng), `DELETE` ảnh (204).
 
 ### CÒN DỞ / VIỆC TIẾP TỤC (hôm sau)
-1. **`migrate_to_pg.py`** — còn thiếu đoạn `sys.stdout.reconfigure(encoding="utf-8")` ở đầu file để in tiếng Việt chuẩn trên Windows (đã bị lỗi cp1252 khi test; hiện file **chưa thêm đoạn này** — cần bổ sung rồi test lại).
-2. Viết **`HUONG_DAN_DEPLOY.md`** hướng dẫn từng bước: tạo tài khoản GitHub/Render, push code, tạo DB PostgreSQL, chạy `migrate_to_pg.py`, cấu hình env (`DATABASE_URL`, `ROOM_MANAGER_SECRET`), deploy, đổi mật khẩu admin.
-3. Cập nhật **`README.md`** (mô tả tính năng PostgreSQL/DB-lưu-ảnh, hướng deploy).
+1. ✅ **`migrate_to_pg.py`** đã sửa UTF-8 và chuyển cả phòng, ảnh, cài đặt, tài khoản, khách trọ, hóa đơn, hợp đồng, tin nhắn.
+2. ✅ **`HUONG_DAN_DEPLOY.md`** đã viết đầy (20/09/2026): cài Git → push GitHub → tạo PostgreSQL → chạy `migrate_to_pg.py` → deploy Web Service → kiểm tra → đổi mật khẩu admin → xử lý sự cố.
+3. ✅ **`README.md`** đã cập nhật tính năng; hướng dẫn deploy chi tiết giờ ở `HUONG_DAN_DEPLOY.md` (file tách riêng).
 4. **Sau khi deploy xong**: đổi mật khẩu admin mặc định `admin123`, đặt `ROOM_MANAGER_SECRET` ngẫu nhiên.
 5. Tạm thời **chưa đưa dữ liệu** lên GitHub (`.gitignore` đã loại `data/*.db`, `uploads/*`).
 
 ### LƯU Ý QUAN TRỌNG khi tiếp tục
-- Thư mục đang **chưa có git** → chưa thể push. Cần cài đặt Git (vd dùng `winget install Git.Git`) hoặc Azure khi tiếp nối phiên sau.
+- ✅ **Git đã cài** (2.55.0.3, qua `winget install Git.Git`) và **repo đã khởi tạo** (`git init -b main`), commit đầu `6110d5b`. Giờ chỉ thiếu: tạo repo trống trên GitHub + `git remote add origin ... && git push -u origin main` (ди hướng trong `HUONG_DAN_DEPLOY.md`).
 - `chay.bat` / `run.py` vẫn chạy local bằng SQLite bình thường. Muốn test nhanh bằng API ở máy, xoá DB cũ để `create_all` tạo đủ bảng `stored_files` mới, hoặc gọi `seed_data()`.
 - Không xoá folder `data/` & `uploads/` (chứa dữ liệu thật đang dùng để migrate).
+---
+
+## 8. PHIÊN 20/09/2026 — TÙY BIẾN TRANG KHÁCH & TIẾNG VIỆT (ĐÃ LÀM XONG)
+
+### Các việc đã hoàn thành trong phiên này
+
+| # | Việc | Chi tiết |
+|---|------|----------|
+| 1 | **Thay Google Maps bằng link nhúng cố định** | Đã lưu iframe embed (`https://www.google.com/maps/embed?pb=...`) vào `map_embed_url` trong `site_settings`. Trang khách nhận biết link embed (hàm `isEmbeddableMapUrl`) và nhúng iframe trực tiếp. Link chia sẻ `maps.app.goo.gl` thường chỉ hiển thị bản đồ theo `map_location`. |
+| 2 | **Nút lọc Có điều hòa / Không có điều hòa** | Trang khách có bar lọc chip: `Tất cả phòng` / `Có điều hòa` / `Không có điều hòa` (id `filter-chips`). Backend thêm field `has_ac` vào `RoomListItem` (schemas + `app/routers/rooms.py`). Regex `Đ\w*\s*hòa` (không phân biệt hoa thường) nhận diện "Điều hòa" kể cả viết sai dấu. **Lưu ý:** tên thiết bị phải chứa "điều hòa" / "Điều hòa" mới được coi là có AC. |
+| 3 | **Nội quy hiện/ẩn bớt** | Trang khách mặc định chỉ hiện **3 điểm đầu** của Nội quy; nếu nhiều hơn thì có nút `📖 Xem toàn bộ nội quy (n) ▼` / `🙈 Thu gọn nội quy ▲` (id `rules-toggle`, phần ẩn `#rules-rest`). Nếu nội quy ≤ 3 điểm thì không hiện nút. |
+| 4 | **Đổi toàn bộ nội dung sang tiếng Việt đúng** | Sửa các câu lẫn tiếng Ba Lan: `Không znaleziono...` → "Không có phòng phù hợp với bộ lọc này.", `Chưa có phòng nào do wyświetlenia` → "Chưa có phòng nào để hiển thị.", nội quy mặc định + nội quy trong DB viết lại tiếng Việt, comment/log trong code chuyển sang tiếng Việt. |
+| 5 | **Tiếng Việt có dấu cho chip lọc AC** | `Tất phòng` → `Tất cả phòng`, `Có Điêu hòa` → `Có điều hòa`, `Không có Điêu hòa` → `Không có điều hòa` (index.html + comment CSS/JS + smoke_test). |
+| 6 | **Responsive (tự co theo màn hình)** | Thêm `@media` các mức **960px / 768px / 640px / 480px**: filter dồn cột, modal trượt từ dưới lên, header gọn lại, input 16px (tránh zoom iOS), lưới phòng & chips thành full-width, thống kê 2×2, nút gọi riêng full-width. Thêm `touch-action: manipulation`, tắt hiệu ứng hover trên touch, `overflow-x` chặn tràn ngang. |
+| 7 | **Đổi ảnh nền header: upload HOẶC ảnh mặc định** | Panel admin → ⚙️ Cài đặt → "Ảnh nền trang chủ" giờ có thêm mục "Hoặc chọn ảnh mặc định": lưới **6 ảnh SVG** (`app/static/images/bg/bg-1..6.svg`), click chọn → bấm Lưu. Endpoint mới `GET /api/settings/backgrounds` (public). Các ảnh mặc định nằm ở `app/static/images/bg/`. Upload cũ (post 8MB) vẫn giữ. |
+
+### Trạng thái kỹ thuật cuối phiên
+- ✅ **Smoke test: 48/48 đạt / 0 lỗi** (`python -W ignore smoke_test.py`).
+- ✅ Trang khách & admin render đúng; các mẫu ảnh nền serve được (`200 image/svg+xml`).
+- ✅ Dữ liệu thật (6 phòng, 6+ ảnh, settings, Nội quy tiếng Việt) nguyên vẹn.
+
+### QUAN TRỌNG — vấn đề server & cách khởi động
+- ⚠️ **Auto-reload (`run.py`) đã bị lỗi ở máy này**: uvicorn reloader tạo **"zombie" process** giữ port 8000 và **không nạp code mới** (dính bản cũ). Đã phát hiện 3 process python cùng lúc.
+- **Cách khởi động ổn định (đang dùng):** chạy thẳng uvicorn KHÔNG reload:
+  ```
+  cd C:\Users\Admin\.cline\data\workspaces\chat\phong_tro_manager
+  $env:PYTHONIOENCODING='utf-8'
+  Start-Process .\.venv\Scripts\python.exe -ArgumentList @('-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8000') -WindowStyle Hidden -RedirectStandardOutput s_out.log -RedirectStandardError s_err.log
+  ```
+- Nếu port 8000 bị chiếm: tìm `Get-NetTCPConnection -LocalPort 8000 -State Listen` rồi `taskkill /PID <pid> /F`.
+- **Sau khi sửa code phải khởi động lại server** (không có auto-reload).
+- ✅ Node.js KHÔNG cài trên máy → không chạy được `node --check` để kiểm tra JS.
+
+### Việc muốn làm tiếp (chưa làm)
+1. Deploy (xem mục 7): tạo repo GitHub + `git remote add origin ... && git push -u origin main` → tạo PostgreSQL → `migrate_to_pg.py` → Render.
+2. Sau deploy: đổi mật khẩu admin khỏi `admin123`, đặt `ROOM_MANAGER_SECRET` ngẫu nhiên.
+3. (Tùy chọn) Thêm ảnh nền mặc định kiểu ảnh thật (JPG) nếu chủ nhà gửi ảnh riêng.

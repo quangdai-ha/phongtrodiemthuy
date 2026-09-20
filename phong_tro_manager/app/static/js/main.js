@@ -22,6 +22,16 @@ async function apiGet(url) {
   return res.json();
 }
 
+/* ---------- Toast ---------- */
+const toastEl = document.getElementById("toast");
+let toastTimer = null;
+function showToast(msg, type = "") {
+  toastEl.textContent = msg;
+  toastEl.className = `toast show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toastEl.className = "toast"; }, 3200);
+}
+
 /* ---------------- Thống kê ---------------- */
 async function loadStats() {
   const stats = await apiGet("/api/rooms/stats");
@@ -32,13 +42,35 @@ async function loadStats() {
 }
 
 /* ---------------- Danh sách phòng ---------------- */
+function filterQuery() {
+  const q = document.getElementById("f-q").value.trim();
+  const status = document.getElementById("f-status").value;
+  const price = document.getElementById("f-price").value;
+  const area = document.getElementById("f-area").value;
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (status) params.set("status", status);
+  if (price) {
+    const [min, max] = price.split(",");
+    params.set("min_price", min);
+    params.set("max_price", max);
+  }
+  if (area) {
+    const [min, max] = area.split(",");
+    params.set("min_area", min);
+    params.set("max_area", max);
+  }
+  const qs = params.toString();
+  return qs ? `?${qs}` : "";
+}
+
 function roomCard(room) {
   const thumb = room.thumbnail_url
     ? `<img src="${room.thumbnail_url}" alt="${room.name}" loading="lazy" />`
     : `<div class="placeholder-text">${room.name}</div>`;
 
   return `
-    <div class="room-card" data-id="${room.id}">
+    <div class="room-card" data-id="${room.id}" data-ac="${room.has_ac ? "1" : "0"}">
       <div class="room-thumb">
         ${thumb}
         ${statusBadge(room.status)}
@@ -59,9 +91,11 @@ async function loadRooms() {
   loading.style.display = "block";
 
   try {
-    const rooms = await apiGet("/api/rooms");
+    const rooms = await apiGet("/api/rooms" + filterQuery());
     loading.style.display = "none";
-    document.getElementById("room-count").textContent = `${rooms.length} phòng`;
+    const count = document.getElementById("room-count");
+    count.textContent = rooms.length ? `${rooms.length} phòng` : "0 phòng";
+    empty.classList.add("hidden");
     if (rooms.length === 0) {
       empty.classList.remove("hidden");
       return;
@@ -72,11 +106,47 @@ async function loadRooms() {
     grid.querySelectorAll(".room-card").forEach((card) => {
       card.addEventListener("click", () => openDetail(card.dataset.id));
     });
+    applyAcFilter();
   } catch (err) {
     loading.style.display = "none";
     empty.textContent = "Không thể tải danh sách phòng. Vui lòng thử lại.";
     empty.classList.remove("hidden");
   }
+}
+
+/* ---------------- Lọc điều hòa ---------------- */
+function currentAcFilter() {
+  const bar = document.getElementById("filter-chips");
+  if (!bar) return "all";
+  for (const chip of bar.querySelectorAll(".filter-chip")) {
+    if (chip.classList.contains("active")) return chip.dataset.ac;
+  }
+  return "all";
+}
+
+function applyAcFilter() {
+  const grid = document.getElementById("rooms");
+  const cards = grid ? grid.querySelectorAll(".room-card") : [];
+  const val = currentAcFilter();
+  if (!cards.length) return;
+  let shown = 0;
+  cards.forEach((card) => {
+    const ok = val === "all" || card.dataset.ac === val;
+    card.style.display = ok ? "" : "none";
+    if (ok) shown += 1;
+  });
+  const empty = document.getElementById("empty");
+  if (empty) {
+    if (shown === 0) {
+      empty.textContent = "Không có phòng phù hợp với bộ lọc này.";
+      empty.classList.remove("hidden");
+    } else {
+      empty.textContent = "Chưa có phòng nào để hiển thị.";
+      empty.classList.add("hidden");
+    }
+  }
+  const count = document.getElementById("room-count");
+  if (count) count.textContent = shown ? `${shown} phòng` : "0 phòng";
 }
 
 /* ---------------- Chi tiết phòng ---------------- */
@@ -121,6 +191,9 @@ function detailHTML(room) {
   const equipmentBlock = equipment
     ? `<ul class="equipment-list">${equipment}</ul>`
     : '<p class="muted">Chưa cập nhật thiết bị.</p>';
+  const bookingAction = room.status === "available"
+    ? `<button class="btn btn-primary btn-book-room" data-id="${room.id}">🏠 Đặt phòng này</button>`
+    : '<span class="muted">Phòng hiện không nhận đặt phòng.</span>';
 
   return `
     ${galleryHTML(room.images)}
@@ -133,7 +206,11 @@ function detailHTML(room) {
     <h4>Mô tả</h4>
     <p class="detail-desc">${room.description || "Chưa có mô tả."}</p>
     <h4>Trang thiết bị</h4>
-    ${equipmentBlock}`;
+    ${equipmentBlock}
+    <div class="modal-actions">
+      ${bookingAction}
+      <button class="btn btn-ghost" id="btn-close-detail">Đóng</button>
+    </div>`;
 }
 
 async function openDetail(id) {
@@ -145,6 +222,10 @@ async function openDetail(id) {
     modalTitle.textContent = room.name;
     modalBody.innerHTML = detailHTML(room);
     bindGalleryThumbs();
+    const bookBtn = modalBody.querySelector(".btn-book-room");
+    if (bookBtn) bookBtn.addEventListener("click", () => startBooking(bookBtn.dataset.id));
+    const closeBtn = modalBody.querySelector("#btn-close-detail");
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
   } catch (err) {
     modalBody.innerHTML = '<p class="center muted">Không thể tải chi tiết phòng.</p>';
   }
@@ -203,6 +284,56 @@ async function loadSettings() {
     document.getElementById("contact-hours").textContent =
       s.hours || "Chưa cập nhật giờ mở cửa";
 
+    // Các nút Gọi điện / Zalo / Facebook
+    const digits = (s.phone || "").replace(/[^+\d]/g, "");
+    const socCall = document.getElementById("soc-call");
+    const socZalo = document.getElementById("soc-zalo");
+    const socFb = document.getElementById("soc-fb");
+    if (socCall) socCall.href = s.phone ? `tel:${digits}` : "#";
+    if (socZalo) socZalo.href = digits ? `https://zalo.me/${digits}` : "#";
+    if (socFb) {
+      if (s.facebook_url) {
+        socFb.href = s.facebook_url;
+        socFb.classList.remove("hidden");
+      } else {
+        socFb.classList.add("hidden");
+      }
+    }
+
+    // Nội quy & Quy định — mặc định chỉ hiện 3 điểm đầu,
+    // phần còn lại ẩn đi và bật nút "Xem toàn bộ / Thu gọn".
+    const rulesSection = document.getElementById("rules-section");
+    const rulesBody = document.getElementById("rules-body");
+    const rulesToggle = document.getElementById("rules-toggle");
+    const rules = (s.house_rules || "").trim();
+    if (rulesSection && rulesBody) {
+      if (rules) {
+        const lines = rules.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+        const PREVIEW = 3;
+        const rest = lines.slice(PREVIEW);
+        rulesBody.innerHTML = lines
+          .slice(0, PREVIEW)
+          .map((l) => `<p>${escHTML(l)}</p>`)
+          .join("");
+        if (rest.length) {
+          const restWrap = document.createElement("div");
+          restWrap.id = "rules-rest";
+          restWrap.className = "rules-rest hidden";
+          restWrap.innerHTML = rest.map((l) => `<p>${escHTML(l)}</p>`).join("");
+          rulesBody.appendChild(restWrap);
+          if (rulesToggle) {
+            rulesToggle.hidden = false;
+            rulesToggle.textContent = `📖 Xem toàn bộ nội quy (${rest.length}) ▼`;
+          }
+        } else if (rulesToggle) {
+          rulesToggle.hidden = true;
+        }
+        rulesSection.classList.remove("hidden");
+      } else {
+        rulesSection.classList.add("hidden");
+      }
+    }
+
     // Ảnh nền phần tiêu đề
     const header = document.querySelector(".site-header");
     if (header) {
@@ -256,4 +387,115 @@ document.addEventListener("keydown", (e) => {
 
 loadStats();
 loadRooms();
+/* ---------------- Lọc / tìm kiếm phòng ---------------- */
+const filterBar = document.getElementById("filter-bar");
+if (filterBar) {
+  filterBar.addEventListener("input", () => loadRooms());
+  filterBar.addEventListener("change", () => loadRooms());
+}
+document.getElementById("f-clear").addEventListener("click", () => {
+  document.getElementById("f-q").value = "";
+  document.getElementById("f-status").value = "";
+  document.getElementById("f-price").value = "";
+  document.getElementById("f-area").value = "";
+  const bar = document.getElementById("filter-chips");
+  if (bar) {
+    bar.querySelectorAll(".filter-chip").forEach((c) => {
+      c.classList.toggle("active", c.dataset.ac === "all");
+    });
+  }
+  loadRooms();
+});
+
+/* ---------------- Lọc điều hòa ---------------- */
+const chipsBar = document.getElementById("filter-chips");
+if (chipsBar) {
+  chipsBar.querySelectorAll(".filter-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      chipsBar.querySelectorAll(".filter-chip").forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      applyAcFilter();
+    });
+  });
+}
+
+/* ---------------- Nội quy: hiện / ẩn bớt ---------------- */
+const rulesToggleBtn = document.getElementById("rules-toggle");
+if (rulesToggleBtn) {
+  rulesToggleBtn.addEventListener("click", () => {
+    const restWrap = document.getElementById("rules-rest");
+    if (!restWrap) return;
+    const collapsed = restWrap.classList.toggle("hidden");
+    const count = restWrap.querySelectorAll("p").length;
+    rulesToggleBtn.textContent = collapsed
+      ? `📖 Xem toàn bộ nội quy (${count}) ▼`
+      : "🙈 Thu gọn nội quy ▲";
+  });
+}
+
+/* ---------------- Form liên hệ / đặt phòng ---------------- */
+async function loadRoomOptions() {
+  const sel = document.getElementById("c-room");
+  try {
+    const rooms = await apiGet("/api/rooms");
+    const opts = rooms
+      .filter((r) => r.status === "available")
+      .map((r) => `<option value="${r.id}">${escHTML(r.name)} — ${formatVND(r.price)}/tháng</option>`)
+      .join("");
+    sel.innerHTML = '<option value="">Chưa chọn phòng</option>' + opts;
+  } catch (err) {
+    /* bỏ qua nếu chưa tải được phòng */
+  }
+}
+
+function startBooking(roomId) {
+  closeModal();
+  const sel = document.getElementById("c-room");
+  if (sel && roomId) sel.value = String(roomId);
+  const name = document.getElementById("c-name");
+  const msg = document.getElementById("c-message");
+  if (name && !name.value) name.focus();
+  if (msg && !msg.value) {
+    const roomName = sel && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : "";
+    msg.value = `Xin chào, em muốn đặt phòng ${roomName}. Vui lòng liên hệ lại em ạ.`;
+  }
+  const section = document.getElementById("contact-form-section");
+  if (section) section.scrollIntoView({ behavior: "smooth" });
+}
+
+document.getElementById("contact-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const payload = {
+    name: document.getElementById("c-name").value.trim(),
+    phone: document.getElementById("c-phone").value.trim(),
+    email: document.getElementById("c-email").value.trim(),
+    room_id: document.getElementById("c-room").value
+      ? Number(document.getElementById("c-room").value)
+      : null,
+    message: document.getElementById("c-message").value.trim(),
+  };
+  if (!payload.name || !payload.phone || !payload.message) {
+    return showToast("Vui lòng điền đầy đủ họ tên, số điện thoại và nội dung.", "error");
+  }
+  btn.disabled = true;
+  try {
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Gửi thất bại.");
+    showToast("✅ Đã gửi yêu cầu. Quản lý sẽ sớm liên hệ lại bạn!", "success");
+    e.target.reset();
+    await loadRoomOptions();
+  } catch (err) {
+    showToast(err.message, "error");
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+loadRoomOptions();
 loadSettings();

@@ -1,12 +1,13 @@
 """API quản lý phòng trọ (công khai xem, admin chỉnh sửa)."""
 import json
 import os
+import re
 import uuid
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
-from ..auth import get_current_admin
+from ..auth import get_current_admin, require_admin_role
 from ..database import get_db
 from ..models import STATUS_CHOICES, Room, RoomImage
 from ..schemas import (
@@ -22,6 +23,7 @@ from ..storage import delete_file, save_file
 router = APIRouter(prefix="/api/rooms", tags=["rooms"])
 
 ALLOWED_IMAGE_EXT = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+MAX_UPLOAD_BYTES = 8 * 1024 * 1024  # Giới hạn mỗi ảnh tối đa 8MB
 
 
 def _equipment_list(room: Room):
@@ -31,6 +33,17 @@ def _equipment_list(room: Room):
         return data if isinstance(data, list) else []
     except (json.JSONDecodeError, TypeError):
         return []
+
+
+# Nhận diện "điều hòa" trong thiết bị phòng —
+# chấp nhận các biến thể viết sai dấu (Điêu, Điéu, Đieu...):
+# Đ + các ký tự + dấu cách tùy chọn + "hòa".
+_AC_RE = re.compile(r"Đ\w*\s*hòa", re.IGNORECASE)
+
+
+def _has_ac(equipment: list) -> bool:
+    """Kiểm tra phòng có điều hòa trong thiết bị hay không."""
+    return any(bool(_AC_RE.search(item)) for item in equipment)
 
 
 def _thumbnail(room: Room):
@@ -45,6 +58,7 @@ def _to_list_item(room: Room) -> RoomListItem:
         area=room.area,
         status=room.status,
         thumbnail_url=_thumbnail(room),
+        has_ac=_has_ac(_equipment_list(room)),
     )
 
 
@@ -63,6 +77,7 @@ def _to_detail(room: Room) -> RoomDetail:
         equipment=_equipment_list(room),
         images=images,
         thumbnail_url=_thumbnail(room),
+        has_ac=_has_ac(_equipment_list(room)),
         created_at=room.created_at,
     )
 
@@ -79,9 +94,30 @@ def _get_room_or_404(db: Session, room_id: int) -> Room:
 # ---------------------------------------------------------------------------
 
 @router.get("", response_model=list[RoomListItem])
-def list_rooms(db: Session = Depends(get_db)):
-    """Danh sách phòng cho khách xem."""
-    rooms = db.query(Room).order_by(Room.id).all()
+def list_rooms(
+    db: Session = Depends(get_db),
+    q: str = Query("", description="Tìm theo tên phòng"),
+    status: str = Query("", description="Lọc theo trạng thái"),
+    min_price: float = Query(None, description="Giá thấp nhất"),
+    max_price: float = Query(None, description="Giá cao nhất"),
+    min_area: float = Query(None, description="Diện tích tối thiểu"),
+    max_area: float = Query(None, description="Diện tích tối đa"),
+):
+    """Danh sách phòng cho khách xem (hỗ trợ lọc/tìm kiếm)."""
+    query = db.query(Room)
+    if q and q.strip():
+        query = query.filter(Room.name.ilike(f"%{q.strip()}%"))
+    if status and status in STATUS_CHOICES:
+        query = query.filter(Room.status == status)
+    if min_price is not None:
+        query = query.filter(Room.price >= min_price)
+    if max_price is not None:
+        query = query.filter(Room.price <= max_price)
+    if min_area is not None:
+        query = query.filter(Room.area >= min_area)
+    if max_area is not None:
+        query = query.filter(Room.area <= max_area)
+    rooms = query.order_by(Room.id).all()
     return [_to_list_item(r) for r in rooms]
 
 
@@ -174,9 +210,9 @@ def update_room(
 def delete_room(
     room_id: int,
     db: Session = Depends(get_db),
-    admin=Depends(get_current_admin),
+    admin=Depends(require_admin_role),
 ):
-    """Xóa phòng và các hình ảnh liên quan."""
+    """Xóa phòng và các hình ảnh liên quan (chỉ role admin)."""
     room = _get_room_or_404(db, room_id)
     for img in room.images:
         delete_file(db, img.filename)
@@ -199,8 +235,13 @@ def upload_image(
             status_code=400,
             detail="Định dạng ảnh không hợp lệ. Hỗ trợ: jpg, png, gif, webp.",
         )
-    filename = f"{uuid.uuid4().hex}{ext}"
     data = file.file.read()
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail="Ảnh quá lớn. Giới hạn tối đa 8MB cho mỗi ảnh.",
+        )
+    filename = f"{uuid.uuid4().hex}{ext}"
     save_file(db, filename, data, file.content_type)
 
     img = RoomImage(room_id=room.id, filename=filename)
@@ -215,9 +256,9 @@ def delete_image(
     room_id: int,
     image_id: int,
     db: Session = Depends(get_db),
-    admin=Depends(get_current_admin),
+    admin=Depends(require_admin_role),
 ):
-    """Xóa một hình ảnh của phòng."""
+    """Xóa một hình ảnh của phòng (chỉ role admin)."""
     room = _get_room_or_404(db, room_id)
     img = db.query(RoomImage).filter(
         RoomImage.id == image_id, RoomImage.room_id == room.id

@@ -8,7 +8,9 @@ Trang web quản lý phòng trọ được xây bằng **FastAPI + SQLite + HTML
 - Hiển thị thống kê: tổng phòng, phòng **trống**, phòng **đã ở**, phòng bảo trì.
 - Lưới danh sách phòng với **giá** và **trạng thái**.
 - Bấm vào phòng để xem chi tiết: mô tả, diện tích, trang thiết bị, hình ảnh.
+- Tìm kiếm/lọc phòng theo tên, trạng thái, mức giá và diện tích.
 - Mục **Liên hệ & Bản đồ**: địa chỉ, số điện thoại, giờ mở/đóng cửa và bản đồ Google Maps nhúng.
+- Gửi yêu cầu liên hệ/đặt phòng; gọi điện, mở Zalo và Facebook nhanh.
 
 ### Trang quản trị (`/admin`)
 - Đăng nhập bằng tài khoản quản trị.
@@ -18,6 +20,12 @@ Trang web quản lý phòng trọ được xây bằng **FastAPI + SQLite + HTML
 - Upload / xóa hình ảnh của từng phòng.
 - **Cài đặt liên hệ & bản đồ**: chỉnh địa chỉ, điện thoại, giờ mở cửa, vị trí Google Maps.
 - **Đổi ảnh nền trang chủ**: upload / xóa ảnh nền phần tiêu đề ngay trong mục Cài đặt liên hệ.
+- Quản lý khách trọ, CCCD, phòng đang ở và ngày nhận/trả phòng.
+- Quản lý hóa đơn điện nước theo tháng, tự tính tiền và trạng thái đã thu.
+- Quản lý hợp đồng, tiền cọc và tiền thuê hàng tháng.
+- Xem và xử lý tin nhắn liên hệ/đặt phòng.
+- Quản lý tài khoản `admin`/`staff`, đổi mật khẩu và phân quyền thao tác.
+- Giới hạn mỗi ảnh tải lên tối đa 8MB.
 
 ## Cài đặt & chạy
 
@@ -49,8 +57,8 @@ phong_tro_manager/
 ├── requirements.txt
 ├── app/
 │   ├── main.py            # FastAPI app + seed dữ liệu mẫu
-│   ├── database.py        # SQLite engine/session
-│   ├── models.py          # Room, RoomImage, Admin
+│   ├── database.py        # SQLite local / PostgreSQL production
+│   ├── models.py          # Phòng, khách, hóa đơn, hợp đồng, tin nhắn, tài khoản
 │   ├── schemas.py         # Pydantic schemas
 │   ├── auth.py            # Băm mật khẩu + JWT
 │   ├── routers/
@@ -81,5 +89,11 @@ phong_tro_manager/
 | GET         | `/api/settings`                      | Lấy thông tin liên hệ          |
 | PUT         | `/api/settings`                      | Cập nhật liên hệ & bản đồ *(admin)* |
 | POST        | `/api/settings/background`           | Upload ảnh nền trang chủ *(admin)* |
+| POST        | `/api/contact`                       | Gửi liên hệ/đặt phòng              |
+| GET/POST    | `/api/tenants`                       | Danh sách/thêm khách trọ *(quản trị)* |
+| GET/POST    | `/api/tenants/bills`                 | Danh sách/thêm hóa đơn *(quản trị)* |
+| GET/POST    | `/api/tenants/contracts`             | Danh sách/thêm hợp đồng *(quản trị)* |
+| GET         | `/api/auth/me`                       | Tài khoản hiện tại                 |
+| GET/POST    | `/api/auth/admins`                   | Quản lý tài khoản *(admin)*        |
 
 Tài liệu API tương tác: http://127.0.0.1:8000/docs

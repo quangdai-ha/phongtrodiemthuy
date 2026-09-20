@@ -67,3 +67,26 @@ def get_current_admin(
     if admin is None:
         raise HTTPException(status_code=401, detail="Tài khoản không tồn tại.")
     return admin
+
+
+def require_admin_role(admin: Admin = Depends(get_current_admin)) -> Admin:
+    """Dependency phân quyền: chỉ tài khoản role `admin` mới được phép.
+
+    Tài khoản role `staff` không được: xóa dữ liệu, đổi cài đặt site,
+    hay quản lý các tài khoản quản trị.
+    """
+    if admin.role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Bạn không có quyền thực hiện thao tác này.",
+        )
+    return admin
+
+
+def role_label(role: str) -> str:
+    """Tên hiển thị cho vai trò."""
+    if role == "admin":
+        return "Quản trị viên"
+    if role == "staff":
+        return "Nhân viên"
+    return role

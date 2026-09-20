@@ -38,6 +38,39 @@
     </div>
   </section>
 
+  <!-- Lọc / tìm kiếm phòng -->
+  <section class="container filter-section">
+    <div class="filter-bar" id="filter-bar">
+      <input class="form-control filter-q" id="f-q" type="search" placeholder="🔎 Tìm tên phòng..." />
+      <select class="form-control" id="f-status">
+        <option value="">Tất cả trạng thái</option>
+        <option value="available">Phòng trống</option>
+        <option value="occupied">Đã có người ở</option>
+        <option value="maintenance">Đang bảo trì</option>
+      </select>
+      <select class="form-control" id="f-price">
+        <option value="">Tất cả mức giá</option>
+        <option value="0,2000000">Dưới 2 triệu</option>
+        <option value="2000000,2500000">2 - 2.5 triệu</option>
+        <option value="2500000,3000000">2.5 - 3 triệu</option>
+        <option value="3000000,99999999">Trên 3 triệu</option>
+      </select>
+      <select class="form-control" id="f-area">
+        <option value="">Tất cả diện tích</option>
+        <option value="0,15">Dưới 15 m²</option>
+        <option value="15,20">15 - 20 m²</option>
+        <option value="20,25">20 - 25 m²</option>
+        <option value="25,99999">Trên 25 m²</option>
+      </select>
+      <button class="btn btn-ghost" id="f-clear" type="button">✕ Xóa lọc</button>
+    </div>
+    <div class="filter-chips" id="filter-chips">
+      <button type="button" class="filter-chip active" data-ac="all">Tất cả phòng</button>
+      <button type="button" class="filter-chip" data-ac="1">❄️ Có điều hòa</button>
+      <button type="button" class="filter-chip" data-ac="0">Không có điều hòa</button>
+    </div>
+  </section>
+
   <!-- Danh sách phòng -->
   <main class="container">
     <div class="section-title">
@@ -49,6 +82,15 @@
     <div class="rooms-grid" id="rooms"></div>
     <p class="center muted hidden" id="empty">Chưa có phòng nào để hiển thị.</p>
   </main>
+
+  <!-- Nội quy & Quy định -->
+  <section class="container rules-section" id="rules-section">
+    <div class="section-title">
+      <h2>📜 Nội quy &amp; Quy định</h2>
+    </div>
+    <div class="rules-body" id="rules-body"></div>
+    <button class="btn btn-ghost rules-toggle" id="rules-toggle" type="button" hidden>📖 Xem toàn bộ nội quy ▼</button>
+  </section>
 
   <!-- Liên hệ & Bản đồ -->
   <section class="container contact-section">
@@ -78,11 +120,56 @@
             <div class="ci-value" id="contact-hours">Đang tải...</div>
           </div>
         </div>
+        <div class="social-btns" id="social-btns">
+          <a class="btn-soc btn-soc-call" id="soc-call" href="#" target="_blank" rel="noopener">📞 Gọi điện</a>
+          <a class="btn-soc btn-soc-zalo" id="soc-zalo" href="#" target="_blank" rel="noopener">💬 Zalo</a>
+          <a class="btn-soc btn-soc-fb" id="soc-fb" href="#" target="_blank" rel="noopener">📘 Facebook</a>
+        </div>
         <a class="btn btn-primary btn-map" id="btn-open-map" href="#" target="_blank" rel="noopener">Mở Google Maps</a>
       </div>
       <div class="map-box" id="map-box">
         <div class="map-placeholder">Đang tải bản đồ...</div>
       </div>
+    </div>
+  </section>
+
+  <!-- Form liên hệ / đặt phòng -->
+  <section class="container contact-section" id="contact-form-section">
+    <div class="section-title">
+      <h2>💬 Liên hệ / Đặt phòng</h2>
+    </div>
+    <div class="contact-form-wrap">
+      <form id="contact-form">
+        <div class="cf-row">
+          <div class="form-group">
+            <label for="c-name">Họ tên *</label>
+            <input class="form-control" id="c-name" required placeholder="VD: Nguyễn Văn An" />
+          </div>
+          <div class="form-group">
+            <label for="c-phone">Số điện thoại *</label>
+            <input class="form-control" id="c-phone" required placeholder="VD: 0896 93 2222" />
+          </div>
+        </div>
+        <div class="cf-row">
+          <div class="form-group">
+            <label for="c-email">Email (tùy chọn)</label>
+            <input class="form-control" id="c-email" type="email" placeholder="VD: an@gmail.com" />
+          </div>
+          <div class="form-group">
+            <label for="c-room">Phòng trống muốn đặt</label>
+            <select class="form-control" id="c-room">
+              <option value="">Chưa chọn phòng</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="c-message">Nội dung *</label>
+          <textarea class="form-control" id="c-message" rows="4" required
+            placeholder="VD: Em muốn xem phòng 102 vào cuối tuần này..."></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">Gửi yêu cầu</button>
+        <span class="muted" style="font-size:0.85rem;"> — Tin nhắn sẽ được gửi tới quản lý, xin cảm ơn!</span>
+      </form>
     </div>
   </section>
 

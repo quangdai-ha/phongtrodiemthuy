@@ -13,6 +13,12 @@ Lưu ý:
 import os
 import sys
 
+# In tiếng Việt chuẩn trên Windows (kể cả khi redirect ra file)
+if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if sys.stderr and hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 # Đưa thư mục gốc dự án vào PYTHONPATH để import app.models
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
@@ -21,7 +27,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.database import Base
-from app.models import Admin, Room, RoomImage, SiteSettings, StoredFile
+from app.models import (
+    Admin,
+    ContactMessage,
+    Contract,
+    Room,
+    RoomImage,
+    SiteSettings,
+    StoredFile,
+    Tenant,
+    UtilityBill,
+)
 
 
 def main() -> None:
@@ -51,7 +67,13 @@ def main() -> None:
 
         # --- Admins ---
         for a in src.query(Admin).all():
-            dst.add(Admin(username=a.username, password_hash=a.password_hash))
+            dst.add(
+                Admin(
+                    username=a.username,
+                    password_hash=a.password_hash,
+                    role=a.role or "admin",
+                )
+            )
         print(f"✓ Admins: {src.query(Admin).count()}")
 
         # --- Rooms (giữ mapping id để nối ảnh) ---
@@ -94,12 +116,99 @@ def main() -> None:
                     map_location=s.map_location,
                     map_embed_url=s.map_embed_url,
                     background_image=s.background_image,
+                    electricity_price=s.electricity_price,
+                    water_price=s.water_price,
+                    facebook_url=s.facebook_url,
+                    house_rules=s.house_rules,
                 )
             )
             bg_fn = (s.background_image or "").rsplit("/", 1)[-1]
             if bg_fn:
                 _store_bytes(dst, upload_dir, bg_fn)
         print("[4] SiteSettings: ok")
+
+        # --- Tenants (giữ mapping để nối hóa đơn & hợp đồng) ---
+        tenant_id_map = {}
+        for t in src.query(Tenant).order_by(Tenant.id).all():
+            new_tenant = Tenant(
+                full_name=t.full_name,
+                phone=t.phone,
+                id_card=t.id_card,
+                permanent_address=t.permanent_address,
+                note=t.note,
+                room_id=room_id_map.get(t.room_id),
+                check_in=t.check_in,
+                check_out=t.check_out,
+                status=t.status,
+                created_at=t.created_at,
+            )
+            dst.add(new_tenant)
+            dst.flush()
+            tenant_id_map[t.id] = new_tenant.id
+        print(f"[5] Tenants: {len(tenant_id_map)}")
+
+        # --- Utility bills ---
+        bill_count = 0
+        for b in src.query(UtilityBill).all():
+            tenant_id = tenant_id_map.get(b.tenant_id)
+            if tenant_id is None:
+                continue
+            dst.add(
+                UtilityBill(
+                    tenant_id=tenant_id,
+                    month=b.month,
+                    elec_old=b.elec_old,
+                    elec_new=b.elec_new,
+                    water_old=b.water_old,
+                    water_new=b.water_new,
+                    elec_amount=b.elec_amount,
+                    water_amount=b.water_amount,
+                    other_fee=b.other_fee,
+                    total=b.total,
+                    paid=b.paid,
+                    note=b.note,
+                    created_at=b.created_at,
+                )
+            )
+            bill_count += 1
+        print(f"[6] UtilityBills: {bill_count}")
+
+        # --- Contracts ---
+        contract_count = 0
+        for c in src.query(Contract).all():
+            tenant_id = tenant_id_map.get(c.tenant_id)
+            if tenant_id is None:
+                continue
+            dst.add(
+                Contract(
+                    tenant_id=tenant_id,
+                    start_date=c.start_date,
+                    end_date=c.end_date,
+                    deposit=c.deposit,
+                    monthly_rent=c.monthly_rent,
+                    note=c.note,
+                    created_at=c.created_at,
+                )
+            )
+            contract_count += 1
+        print(f"[7] Contracts: {contract_count}")
+
+        # --- Contact / booking messages ---
+        message_count = 0
+        for m in src.query(ContactMessage).all():
+            dst.add(
+                ContactMessage(
+                    name=m.name,
+                    phone=m.phone,
+                    email=m.email,
+                    room_id=room_id_map.get(m.room_id),
+                    message=m.message,
+                    is_read=m.is_read,
+                    created_at=m.created_at,
+                )
+            )
+            message_count += 1
+        print(f"[8] ContactMessages: {message_count}")
 
         dst.commit()
         print("\n✅ Hoàn tất! Dữ liệu thật đã sang PostgreSQL.")
