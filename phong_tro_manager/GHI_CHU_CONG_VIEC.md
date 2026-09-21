@@ -1,7 +1,7 @@
 # 📒 GHI CHÚ CÔNG VIỆC — Xóm trọ Sự Bình
 
 > File này **lưu trạng thái toàn bộ công việc** để phiên sau tiếp tục hoàn thiện.
-> Cập nhật ngày: **20/09/2026** — đây là bản ghi hiện tại, phần "Việc cần làm tiếp" ở cuối là các hướng chưa làm.
+> Cập nhật ngày: **21/09/2026** — đây là bản ghi hiện tại, phần "Việc cần làm tiếp" ở cuối là các hướng chưa làm.
 
 ---
 
@@ -59,6 +59,8 @@
 - `run.py` có thông báo lỗi thân thiện nếu thiếu thư viện; file **`chay.bat`** nhấp đúp là chạy.
 - **Bản đồ Google Maps**: nếu admin dán link chia sẻ `maps.app.goo.gl/...` (không nhúng được iframe), trang tự dùng `map_location` để hiển thị bản đồ; nút "Mở Google Maps" vẫn dẫn đúng.
 - **Bảo mật**: backend chặn `map_embed_url` không phải `http(s)://`.
+- **Trang quản trị — không bị "văng" khỏi modal khi gõ nhanh**: Enter trong ô nhập (text/number/select) của modal **không tự submit form** (vô tình lưu + đóng modal ngay). Vẫn cho Enter xuống dòng trong textarea, Enter/Space trên nút bấm, và Ctrl/Cmd+Enter để lưu nhanh có chủ đích. Ngoài ra: khi token 401 (phiên hết hạn), trang đóng luôn modal đang mở ngoài đẩy về màn hinh đăng nhập (`closeAllModals()` trong `admin.js`).
+- **Trang quản trị — modal KHÔNG tự đóng khi bấm/rê chuột ra ngoài cửa sổ**: bỏ hẳn cơ chế "click nền tối → đóng" ở cả 5 modal chỉnh sửa (phòng, cài đặt, khách trọ, hóa đơn, hợp đồng). Trước đây chỉ cần rê chuột chọn văn bản rồi thả ra ngoài khung (hoặc vô tình chạm ra ngoài trên điện thoại) là click phát trên overlay → modal đóng → **mất toàn bộ nội dung đang sửa** (đúng lỗi "văng khi sửa mô tả phòng"). Giờ đóng bằng nút ✕ / Hủy (ESC với khách trọ/hóa đơn/hợp đồng).
 
 ---
 
@@ -66,7 +68,8 @@
 
 DB đã có **dữ liệu thật của chủ** (không còn là dữ liệu mẫu):
 
-- **6 phòng**: Phòng 1, Phòng 102, Phòng 103, Phòng 201, Phòng 202, **Kiost_01**.
+- **7 phòng**: Phòng 1, Phòng 102, Phòng 103, Phòng 201, Phòng 202, Phòng 107, **Kiost_01**.
+  - Trạng thái thật: **4 trống** (1, 103, 202, Kiost_01) · **3 đã ở** (102, 201, 107) · **0 bảo trì**.
 - **6 hình ảnh** phòng (JPG/PNG/WEBP) trong `uploads/`.
 - **Thông tin liên hệ thật** (trong `site_settings`):
   - Địa chỉ: TDP Yên Mễ, phường Hồng Tiến, TP Phổ Yên, tỉnh Thái Nguyên
@@ -159,11 +162,18 @@ DB đã có **dữ liệu thật của chủ** (không còn là dữ liệu mẫ
 | 5 | **Tiếng Việt có dấu cho chip lọc AC** | `Tất phòng` → `Tất cả phòng`, `Có Điêu hòa` → `Có điều hòa`, `Không có Điêu hòa` → `Không có điều hòa` (index.html + comment CSS/JS + smoke_test). |
 | 6 | **Responsive (tự co theo màn hình)** | Thêm `@media` các mức **960px / 768px / 640px / 480px**: filter dồn cột, modal trượt từ dưới lên, header gọn lại, input 16px (tránh zoom iOS), lưới phòng & chips thành full-width, thống kê 2×2, nút gọi riêng full-width. Thêm `touch-action: manipulation`, tắt hiệu ứng hover trên touch, `overflow-x` chặn tràn ngang. |
 | 7 | **Đổi ảnh nền header: upload HOẶC ảnh mặc định** | Panel admin → ⚙️ Cài đặt → "Ảnh nền trang chủ" giờ có thêm mục "Hoặc chọn ảnh mặc định": lưới **6 ảnh SVG** (`app/static/images/bg/bg-1..6.svg`), click chọn → bấm Lưu. Endpoint mới `GET /api/settings/backgrounds` (public). Các ảnh mặc định nằm ở `app/static/images/bg/`. Upload cũ (post 8MB) vẫn giữ. |
+| 8 | **Chống cache CSS/JS (cache-busting)** | `index.html` + `admin.html` nhúng asset kèm phiên bản. **Trạng thái hiện:** `style.css?v=20260921`, `main.js?v=20260921` (index.html), `admin.js?v=20260921` (admin.html). **Quan trọng:** mỗi lần sửa CSS/JS phải **tăng số `v=`** (VD `v=20260921`) để mọi máy khách nhận bản mới. |
+| 9 | **Bấm thẻ thống kê để lọc phòng (trang khách)** | 4 thẻ thống kê (Tổng số phòng / Phòng trống / Phòng đã ở / Đang bảo trì) giờ **bấm được**. Bấm thẻ nào thì danh sách phòng lọc theo đúng trạng thái đó (`/api/rooms?status=...`), thẻ đang chọn được tô sáng + có viền màu riêng, trang tự cuộn xuống mục "Danh sách phòng". Đồng bộ 2 chiều với dropdown lọc trạng thái: chọn dropdown cũng cập nhật highlight thẻ, bấm ✕ Xóa lọc trả về "Tổng số phòng". Thẻ có `data-status` (tổng = `""`), hỗ trợ phím Enter/Space, tăng cache-busting lên `v=20260921`. |
+| 10 | **Sửa lỗi "văng khỏi màn hinh cài đặt khi nhập nhanh" (trang quản trị)** | Người nhập nhanh thông tin (đơn giá, điện thoại, địa chỉ...) thoi bấm **Enter vô tình** → trình duyệt tự submit form → handler lưu + đóng modal ngay → "bị văng". Xử: listener `keydown` capture tầ document chặn (`preventDefault`) Enter trong input/select nằm trong `.modal` (trừ textarea & nút); **Ctrl/Cmd+Enter vẫn submit** (lưu nhanh). Ngoài ra: `api()` khi **401** gọi `closeAllModals()` (đóng settings/form/tenant/bill/contract-modal) trước `showLogin()`. File sửa: `app/static/js/admin.js`, cache-busting admin.html → `admin.js?v=20260921`. |
+| 11 | **Không đóng modal khi bấm/rê chuột ra ngoài cửa sổ (sửa lỗi "văng khi sửa phần mô tả phòng")** | Thao tác "nhấn giữ + rê chuột chọn văn bản rồi thả RA NGOÀI khung popup" (hoặc vô tình chạm nền tối trên điện thoại) phát một `click` trên `.modal-overlay` → handler cũ `if (e.target === overlay) close...` đóng modal ngay → mất toàn bộ dữ liệu đang sửa (VD đang gõ mô tả phòng thì "bị văng"). Xử: xóa handler đóng-khi-bấm-nền-tối ở cả 5 modal (form/settings/tenant/bill/contract-modal) — chỉ đóng bằng nút ✕ / Hủy (riêng tenant/bill/contract vẫn có ESC). File sửa: `app/static/js/admin.js`, cache-busting admin.html → `admin.js?v=20260922`. |
 
 ### Trạng thái kỹ thuật cuối phiên
 - ✅ **Smoke test: 48/48 đạt / 0 lỗi** (`python -W ignore smoke_test.py`).
 - ✅ Trang khách & admin render đúng; các mẫu ảnh nền serve được (`200 image/svg+xml`).
-- ✅ Dữ liệu thật (6 phòng, 6+ ảnh, settings, Nội quy tiếng Việt) nguyên vẹn.
+- ✅ Dữ li thật (7 phòng, ảnh, settings, Nội quy tiếng Việt) nguyên vẹn.
+- ✅ Thẻ thống kê trang khách kiểm chứng: API lọc trạng thái đúng (7 tổng / 4 trống / 3 đã ở / 0 bảo trì), JS/CSS `v=20260921` phục vụ đúng.
+- ✅ Sửa "văng khỏi modal khi nhập nhanh" (admin): balance JS 0/0/0, `admin.js?v=20260921` phục vụ HTTP 200, thẻ script admin.html đã tăng `v=`.
+- ✅ Sửa "văng khi sửa mô tả phòng / bấm nền tối": xóa 5 handler đóng-khi-bấm-overlay (form/settings/tenant/bill/contract), `admin.js?v=20260922` phục vụ HTTP 200.
 
 ### QUAN TRỌNG — vấn đề server & cách khởi động
 - ⚠️ **Auto-reload (`run.py`) đã bị lỗi ở máy này**: uvicorn reloader tạo **"zombie" process** giữ port 8000 và **không nạp code mới** (dính bản cũ). Đã phát hiện 3 process python cùng lúc.
@@ -177,7 +187,16 @@ DB đã có **dữ liệu thật của chủ** (không còn là dữ liệu mẫ
 - **Sau khi sửa code phải khởi động lại server** (không có auto-reload).
 - ✅ Node.js KHÔNG cài trên máy → không chạy được `node --check` để kiểm tra JS.
 
+### MẸO XỬ LÝ SỰ CỐ (đã gặp trong phiên này)
+- **Triệu chứng:** mở web bằng máy tính nhưng vẫn thấy **giao diện kiểu điện thoại / giao diện cũ**.
+  - **Nguyên nhân thật:** trình duyệt giữ **cache CSS/JS cũ** (không phải lỗi code — đã kiểm tra: CSS trên đĩa trùng khớp CSS máy chủ phục vụ, 24.031 bytes; box model cho thấy cửa sổ rộng 1687.5px > 960px nên lẽ ra phải là giao diện desktop).
+  - **Cách xử lý:** nhấn **Ctrl + F5** (hard refresh) → hết ngay. Nay đã thêm `?v=` chống cache nên sẽ không tái diễn.
+  - **Kiểm tra nhanh khi nghi ngờ:** F12 → Console gõ `innerWidth` — nếu < 768 thì đúng là cửa sổ hẹp (zoom to / chưa phóng to); nếu ≥ 960 mà vẫn kiểu mobile thì 99% là cache → Ctrl+F5.
+  - **Cũng cần loại trừ:** DevTools đang bật **chế độ thiết bị** (📱 / Ctrl+Shift+M) hoặc bị **zoom trang** (Ctrl+0 để về 100%).
+
 ### Việc muốn làm tiếp (chưa làm)
 1. Deploy (xem mục 7): tạo repo GitHub + `git remote add origin ... && git push -u origin main` → tạo PostgreSQL → `migrate_to_pg.py` → Render.
 2. Sau deploy: đổi mật khẩu admin khỏi `admin123`, đặt `ROOM_MANAGER_SECRET` ngẫu nhiên.
 3. (Tùy chọn) Thêm ảnh nền mặc định kiểu ảnh thật (JPG) nếu chủ nhà gửi ảnh riêng.
+4. (Tùy chọn) Thêm phòng mẫu với trạng thái `maintenance` để kiểm chứng giao diện thẻ "Đang bảo trì" (hiện 0 phòng bảo trì).
+5. (Tùy chọn) Áp tính thẻ thống kê lọc phòng (tương thích trang khách) đến trang quản trị (`app/static/admin.html` + `admin.js`).

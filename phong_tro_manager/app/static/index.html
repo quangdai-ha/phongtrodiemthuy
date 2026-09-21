@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Xóm trọ Sự Bình - Danh sách phòng trống</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/style.css?v=20260921" />
 </head>
 <body>
   <!-- Header -->
@@ -18,21 +18,21 @@
     </div>
   </header>
 
-  <!-- Thống kê -->
+  <!-- Thống kê (bấm vào để lọc phòng theo trạng thái) -->
   <section class="stats" id="stats">
-    <div class="stat-card">
+    <div class="stat-card active" data-status="" role="button" tabindex="0" title="Xem tất cả phòng">
       <div class="num" id="stat-total">-</div>
       <div class="label">Tổng số phòng</div>
     </div>
-    <div class="stat-card available">
+    <div class="stat-card available" data-status="available" role="button" tabindex="0" title="Lọc phòng trống">
       <div class="num" id="stat-available">-</div>
       <div class="label">Phòng trống</div>
     </div>
-    <div class="stat-card occupied">
+    <div class="stat-card occupied" data-status="occupied" role="button" tabindex="0" title="Lọc phòng đã ở">
       <div class="num" id="stat-occupied">-</div>
       <div class="label">Phòng đã ở</div>
     </div>
-    <div class="stat-card maintenance">
+    <div class="stat-card maintenance" data-status="maintenance" role="button" tabindex="0" title="Lọc phòng đang bảo trì">
       <div class="num" id="stat-maintenance">-</div>
       <div class="label">Đang bảo trì</div>
     </div>
@@ -73,7 +73,7 @@
 
   <!-- Danh sách phòng -->
   <main class="container">
-    <div class="section-title">
+    <div class="section-title" id="room-list-title">
       <h2>Danh sách phòng</h2>
       <span class="muted" id="room-count"></span>
     </div>
@@ -187,6 +187,6 @@
   </div>
 
   <div class="toast" id="toast"></div>
-  <script src="/static/js/main.js"></script>
+  <script src="/static/js/main.js?v=20260921"></script>
 </body>
 </html>

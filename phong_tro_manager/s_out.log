@@ -1,127 +1,144 @@
-INFO:     127.0.0.1:60744 - "GET /api/settings/backgrounds HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60749 - "GET /static/images/bg/bg-1.svg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60750 - "GET /admin HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49394 - "GET /admin HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49394 - "GET /static/css/style.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61066 - "GET /static/js/admin.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61066 - "GET /api/settings/backgrounds HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49394 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59314 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59314 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49394 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61066 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60106 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59314 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63606 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60135 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49394 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57435 - "GET /api/settings HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57435 - "GET /static/images/bg/bg-1.svg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53180 - "GET /static/images/bg/bg-2.svg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51341 - "GET /static/images/bg/bg-3.svg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51616 - "GET /static/images/bg/bg-4.svg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55464 - "GET /static/images/bg/bg-5.svg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63170 - "GET /static/images/bg/bg-6.svg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53649 - "GET /admin HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53649 - "GET /static/css/style.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50979 - "GET /static/js/admin.js HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:53649 - "GET /api/settings/backgrounds HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50979 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54067 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53649 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50979 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65050 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58678 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54067 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51414 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65050 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53649 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51414 - "GET /api/settings HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50979 - "GET /static/images/bg/bg-6.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:51414 - "GET /static/images/bg/bg-1.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:54067 - "GET /static/images/bg/bg-2.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:58678 - "GET /static/images/bg/bg-5.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:65050 - "GET /static/images/bg/bg-4.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:53649 - "GET /static/images/bg/bg-3.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:57701 - "POST /api/settings/background HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57701 - "GET /uploads/bg_6fff7ece490f4b319f713fe5c9ec02ea.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51294 - "PUT /api/settings HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49508 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49508 - "GET /static/css/style.css HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:53905 - "GET /static/js/main.js HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:53905 - "GET /api/rooms/stats HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62773 - "GET /api/settings HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49508 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49508 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49508 - "GET /uploads/bg_6fff7ece490f4b319f713fe5c9ec02ea.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49508 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53905 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62773 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55988 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54225 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58662 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53905 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63122 - "GET /admin HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63122 - "GET /static/js/admin.js HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:63122 - "GET /api/settings/backgrounds HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58139 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52365 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52365 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63122 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58139 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56314 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55872 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55147 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63122 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52365 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52365 - "GET /api/settings HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55147 - "GET /static/images/bg/bg-3.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:58139 - "GET /static/images/bg/bg-1.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:56314 - "GET /static/images/bg/bg-5.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:52365 - "GET /uploads/bg_6fff7ece490f4b319f713fe5c9ec02ea.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55872 - "GET /static/images/bg/bg-4.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:63122 - "GET /static/images/bg/bg-2.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:58139 - "GET /static/images/bg/bg-6.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:54108 - "PUT /api/settings HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52036 - "GET /api/settings HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57212 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54108 - "GET /api/rooms/stats HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52036 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54108 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57212 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52036 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54619 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59556 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55898 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54619 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65296 - "GET /api/rooms/2 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65409 - "GET /static/css/style.css HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:58070 - "GET /static/js/admin.js HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:58070 - "GET /api/settings/backgrounds HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52765 - "GET /api/auth/me HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65409 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65409 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58070 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52765 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60960 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50524 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58070 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65409 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50460 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65409 - "GET /api/settings HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65409 - "GET /api/rooms/1 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61325 - "GET /api/rooms/5 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64545 - "PUT /api/rooms/5 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64545 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54994 - "GET /api/rooms/stats HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50946 - "GET /api/settings HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55975 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55975 - "GET /api/rooms HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55975 - "GET /static/images/bg/bg-1.svg HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:55975 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50946 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54994 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60710 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:49947 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50747 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50946 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49796 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49807 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49807 - "GET /api/rooms?status=available HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49807 - "GET /api/rooms?status=occupied HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49807 - "GET /api/rooms?status=maintenance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49820 - "GET /static/js/main.js?v=20260921 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49820 - "GET /static/css/style.css?v=20260921 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49575 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49575 - "GET /static/css/style.css?v=20260921 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49575 - "GET /static/js/main.js?v=20260921 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49575 - "GET /api/rooms/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53136 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54645 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54645 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54645 - "GET /static/images/bg/bg-1.svg HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54645 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53136 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49575 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54275 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59961 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53136 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63549 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63549 - "GET /api/rooms?status=occupied HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63549 - "GET /api/rooms?status=available HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63549 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63549 - "GET /api/rooms?status=available HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63549 - "GET /api/rooms?status=occupied HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55272 - "GET /api/rooms?status=maintenance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55272 - "GET /api/rooms?status=occupied HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55272 - "GET /api/rooms?status=available HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53387 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57524 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55272 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63827 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63827 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56436 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56436 - "GET /static/css/style.css?v=20260920 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55154 - "GET /static/js/admin.js?v=20260920 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55154 - "GET /api/settings/backgrounds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56663 - "GET /api/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56436 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55154 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56663 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56436 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57352 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58023 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61269 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55154 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61269 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56436 - "GET /static/js/main.js?v=20260921 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:61269 - "GET /static/css/style.css?v=20260921 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55154 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61269 - "GET /api/rooms/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56436 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56436 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56436 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57352 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55154 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61269 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56663 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58023 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57352 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54512 - "GET /api/rooms?status=available HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57207 - "GET /api/rooms?status=occupied HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61897 - "GET /static/js/admin.js?v=20260921 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61897 - "GET /static/admin.html HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61897 - "GET /static/css/style.css?v=20260921 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57186 - "GET /api/rooms?status= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52925 - "GET /static/css/style.css?v=20260920 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:52925 - "GET /api/settings/backgrounds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65484 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:65484 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65484 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65484 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55098 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54213 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61346 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61348 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63644 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61346 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55920 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55920 - "GET /static/images/bg/bg-2.svg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49689 - "GET /static/images/bg/bg-4.svg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63062 - "GET /static/images/bg/bg-3.svg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50616 - "GET /static/images/bg/bg-6.svg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63387 - "GET /static/images/bg/bg-5.svg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52538 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57933 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60265 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60124 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60124 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52737 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53644 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57085 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57085 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59870 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55123 - "GET /static/js/admin.js?v=20260922 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55124 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50318 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50318 - "GET /static/css/style.css?v=20260921 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:60697 - "GET /static/js/main.js?v=20260921 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51890 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60697 - "GET /api/rooms/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50318 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50318 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50318 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60697 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64742 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51890 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53107 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63905 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60697 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63905 - "GET /static/css/style.css?v=20260920 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:63905 - "GET /api/settings/backgrounds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60697 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50318 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51890 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53107 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60697 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63905 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64742 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50318 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51890 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53107 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51890 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51890 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52353 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63844 - "GET /api/settings HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63844 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63844 - "GET /static/css/style.css?v=20260920 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60753 - "GET /static/js/admin.js?v=20260922 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60753 - "GET /api/settings/backgrounds HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62731 - "GET /api/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63844 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63844 - "GET /api/rooms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54794 - "GET /uploads/c8d9515e79c746da98b306a8de589781.webp HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62731 - "GET /uploads/6e60c96d41044d19a25768c1e623841a.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60753 - "GET /uploads/4371635eacfd4fdf9e58dc0a983a789b.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64314 - "GET /uploads/99f02e2af94240569c498b6c4da5eab3.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60775 - "GET /uploads/c42475926f084dbd9613abedcf3a0447.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63844 - "GET /uploads/62cd83ea4b474374aae6786fe8a825ca.jpeg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54794 - "GET /uploads/92de6f18ca4a4c6b860af40848a2e1de.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54794 - "GET /api/rooms/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51654 - "GET /api/rooms/1 HTTP/1.1" 200 OK

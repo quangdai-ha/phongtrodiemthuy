@@ -23,12 +23,19 @@ img { max-width: 100%; display: block; }
 
 /* ========== Stats ========== */
 .stats { max-width: 1100px; margin: -2rem auto 0; padding: 0 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
-.stat-card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.2rem 1.4rem; border-top: 4px solid var(--primary); }
+.stat-card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.2rem 1.4rem; border-top: 4px solid var(--primary); cursor: pointer; user-select: none; transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease; }
 .stat-card .num { font-size: 2rem; font-weight: 800; }
 .stat-card .label { color: var(--muted); font-size: 0.9rem; }
 .stat-card.occupied { border-top-color: var(--occupied); }
 .stat-card.available { border-top-color: var(--available); }
 .stat-card.maintenance { border-top-color: var(--maintenance); }
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.stat-card:active { transform: translateY(-1px); }
+.stat-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.stat-card.active { background: var(--primary-light); box-shadow: 0 0 0 2px var(--primary), var(--shadow-lg); }
+.stat-card.available.active { background: #ebfbee; box-shadow: 0 0 0 2px var(--available), var(--shadow-lg); }
+.stat-card.occupied.active { background: #fff5f5; box-shadow: 0 0 0 2px var(--occupied), var(--shadow-lg); }
+.stat-card.maintenance.active { background: #fff4e6; box-shadow: 0 0 0 2px var(--maintenance), var(--shadow-lg); }
 
 /* ========== Section & Grid ========== */
 .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }

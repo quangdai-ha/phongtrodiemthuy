@@ -391,7 +391,10 @@ loadRooms();
 const filterBar = document.getElementById("filter-bar");
 if (filterBar) {
   filterBar.addEventListener("input", () => loadRooms());
-  filterBar.addEventListener("change", () => loadRooms());
+  filterBar.addEventListener("change", () => {
+    setActiveStat(document.getElementById("f-status").value);
+    loadRooms();
+  });
 }
 document.getElementById("f-clear").addEventListener("click", () => {
   document.getElementById("f-q").value = "";
@@ -404,8 +407,41 @@ document.getElementById("f-clear").addEventListener("click", () => {
       c.classList.toggle("active", c.dataset.ac === "all");
     });
   }
+  setActiveStat("");
   loadRooms();
 });
+
+/* ---------------- Lọc theo thẻ thống kê (Tổng / Trống / Đã ở / Bảo trì) ---------------- */
+const statsSection = document.getElementById("stats");
+
+function setActiveStat(status) {
+  if (!statsSection) return;
+  statsSection.querySelectorAll(".stat-card").forEach((c) => {
+    c.classList.toggle("active", (c.dataset.status || "") === (status || ""));
+  });
+}
+
+if (statsSection) {
+  const applyStatFilter = (status) => {
+    const stSel = document.getElementById("f-status");
+    if (stSel) stSel.value = status || "";
+    setActiveStat(status);
+    loadRooms();
+    // Cuộn xuống danh sách phòng để khách dễ thấy kết quả
+    const title = document.getElementById("room-list-title");
+    if (title) title.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  statsSection.querySelectorAll(".stat-card").forEach((card) => {
+    const handler = () => applyStatFilter(card.dataset.status || "");
+    card.addEventListener("click", handler);
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handler();
+      }
+    });
+  });
+}
 
 /* ---------------- Lọc điều hòa ---------------- */
 const chipsBar = document.getElementById("filter-chips");

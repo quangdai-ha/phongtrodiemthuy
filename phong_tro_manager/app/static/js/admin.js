@@ -87,11 +87,40 @@ document.getElementById("btn-logout").addEventListener("click", () => {
   toast("Đã đăng xuất.");
 });
 
+/* ---------- Đóng mọi modal đang mở ---------- */
+function closeAllModals() {
+  ["settings-modal", "form-modal", "tenant-modal", "bill-modal", "contract-modal"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove("open");
+  });
+  document.body.style.overflow = "";
+}
+
+/* ---------- Chặn Enter vô tình submit form trong modal ----------
+   Khi gõ nhanh và vô tình bấm Enter trong một ô nhập (text/number/select
+   nằm trong modal), trình duyệt sẽ tự submit form → lưu + đóng modal ngay.
+   Chặn hành vi đó để không bị "văng" khỏi màn hình cài đặt khi chưa nhập xong.
+   - Enter trong textarea vẫn xuống dòng bình thường.
+   - Enter/Space trên nút bấm vẫn hoạt động.
+   - Ctrl/Cmd+Enter vẫn cho phép submit (lưu nhanh có chủ đích).
+   - Các form ngoài modal (đăng nhập, tạo tài khoản, đổi mật khẩu) không bị ảnh hưởng.
+*/
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+  const t = e.target;
+  if (!t || !t.closest) return;
+  const form = t.closest("form");
+  if (!form || !form.closest(".modal")) return;
+  if (t.tagName === "TEXTAREA" || t.tagName === "BUTTON") return;
+  e.preventDefault();
+}, true);
+
 /* ---------- Gọi API ---------- */
 async function api(url, options = {}) {
   const res = await fetch(url, options);
   if (res.status === 401) {
     clearToken();
+    closeAllModals();
     showLogin();
     toast("Phiên đã hết hạn, vui lòng đăng nhập lại.", "error");
     throw new Error("401");
@@ -229,9 +258,9 @@ function closeForm() {
 
 document.getElementById("form-close").addEventListener("click", closeForm);
 document.getElementById("form-cancel").addEventListener("click", closeForm);
-formModal.addEventListener("click", (e) => {
-  if (e.target === formModal) closeForm();
-});
+// Không đóng modal khi bấm/rê chuột ra ngoài cửa sổ (nền tối).
+// Trước đây thả chuột ngoài khung (hoặc vô tình chạm ra ngoài) sẽ phát
+// click trên overlay -> đóng modal -> mất dữ liệu đang sửa. Đóng bằng ✕ / Hủy.
 
 /* ---------- Editor thiết bị (tags) ---------- */
 function addTag(text) {
@@ -441,7 +470,7 @@ document.getElementById("btn-settings").addEventListener("click", openSettings);
 document.getElementById("settings-close").addEventListener("click", closeSettings);
 document.getElementById("settings-cancel").addEventListener("click", closeSettings);
 settingsModal.addEventListener("click", (e) => {
-  if (e.target === settingsModal) closeSettings();
+  // (Bỏ đóng modal khi bấm nền tối - tránh mất dữ liệu đang sửa, xem ghi chú formModal)
 });
 
 document.getElementById("settings-form").addEventListener("submit", async (e) => {
@@ -688,7 +717,7 @@ document.getElementById("tenant-status").addEventListener("change", loadTenants)
 document.getElementById("btn-add-tenant").addEventListener("click", () => openTenantForm());
 document.getElementById("tenant-close").addEventListener("click", closeTenantModal);
 document.getElementById("tenant-cancel").addEventListener("click", closeTenantModal);
-document.getElementById("tenant-modal").addEventListener("click", (e) => { if (e.target === e.currentTarget) closeTenantModal(); });
+// (Bỏ đóng modal khi bấm nền tối - tránh mất dữ liệu đang sửa, xem ghi chú formModal)
 
 document.getElementById("tenant-form").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -828,7 +857,7 @@ document.getElementById("bill-tenant").addEventListener("change", loadBills);
 document.getElementById("btn-add-bill").addEventListener("click", () => openBillForm());
 document.getElementById("bill-close").addEventListener("click", closeBillModal);
 document.getElementById("bill-cancel").addEventListener("click", closeBillModal);
-document.getElementById("bill-modal").addEventListener("click", (e) => { if (e.target === e.currentTarget) closeBillModal(); });
+// (Bỏ đóng modal khi bấm nền tối - tránh mất dữ liệu đang sửa, xem ghi chú formModal)
 
 document.getElementById("bill-form").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -932,7 +961,7 @@ async function openContractForm(id = "") {
 document.getElementById("btn-add-contract").addEventListener("click", () => openContractForm());
 document.getElementById("contract-close").addEventListener("click", closeContractModal);
 document.getElementById("contract-cancel").addEventListener("click", closeContractModal);
-document.getElementById("contract-modal").addEventListener("click", (e) => { if (e.target === e.currentTarget) closeContractModal(); });
+// (Bỏ đóng modal khi bấm nền tối - tránh mất dữ liệu đang sửa, xem ghi chú formModal)
 
 document.getElementById("contract-form").addEventListener("submit", async (e) => {
   e.preventDefault();
