@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quản trị - Xóm trọ Sự Bình</title>
-  <link rel="stylesheet" href="/static/css/style.css?v=20260920" />
+  <link rel="stylesheet" href="/static/css/style.css?v=20260923" />
 </head>
 <body>
   <!-- Thanh điều hướng -->
@@ -251,10 +251,13 @@
           </div>
 
           <div class="form-group">
-            <label>Hình ảnh phòng</label>
+            <label>Hình ảnh phòng &amp; Ảnh bìa</label>
             <div class="img-editor" id="img-editor"></div>
             <input type="file" id="img-upload" accept="image/*" multiple style="margin-top:0.6rem;" />
-            <p class="muted" style="font-size:0.8rem;">Hỗ trợ JPG, PNG, GIF, WebP. Ảnh đầu tiên là ảnh bìa.</p>
+            <p class="muted" style="font-size:0.8rem;">
+              Hỗ trợ JPG, PNG, GIF, WebP (tối đa 8MB/ảnh). Ảnh đầu tiên mặc định là ảnh bìa.
+              Bấm <strong>☆ Đặt ảnh bìa</strong> ở từng ảnh để chọn ảnh bìa khác.
+            </p>
           </div>
 
           <div style="display:flex; gap:0.8rem; justify-content:flex-end; margin-top:1rem;">
@@ -528,6 +531,6 @@
   </div>
 
   <div class="toast" id="toast"></div>
-  <script src="/static/js/admin.js?v=20260922"></script>
+  <script src="/static/js/admin.js?v=20260923"></script>
 </body>
 </html>

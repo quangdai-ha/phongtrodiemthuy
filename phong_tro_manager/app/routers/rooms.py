@@ -12,6 +12,7 @@ from ..database import get_db
 from ..models import STATUS_CHOICES, Room, RoomImage
 from ..schemas import (
     ImageOut,
+    RoomCoverUpdate,
     RoomCreate,
     RoomDetail,
     RoomListItem,
@@ -47,7 +48,16 @@ def _has_ac(equipment: list) -> bool:
 
 
 def _thumbnail(room: Room):
-    return f"/uploads/{room.images[0].filename}" if room.images else None
+    cover = next((img for img in room.images if img.is_cover), None)
+    img = cover or (room.images[0] if room.images else None)
+    return f"/uploads/{img.filename}" if img else None
+
+
+def _cover_first(room: Room):
+    """Sắp ảnh: ảnh bìa (is_cover) đứng trước, còn lại giữ thứ tự cũ."""
+    return [i for i in room.images if i.is_cover] + [
+        i for i in room.images if not i.is_cover
+    ]
 
 
 def _to_list_item(room: Room) -> RoomListItem:
@@ -64,8 +74,13 @@ def _to_list_item(room: Room) -> RoomListItem:
 
 def _to_detail(room: Room) -> RoomDetail:
     images = [
-        ImageOut(id=img.id, filename=img.filename, url=f"/uploads/{img.filename}")
-        for img in room.images
+        ImageOut(
+            id=img.id,
+            filename=img.filename,
+            url=f"/uploads/{img.filename}",
+            is_cover=img.is_cover,
+        )
+        for img in _cover_first(room)
     ]
     return RoomDetail(
         id=room.id,
@@ -244,11 +259,15 @@ def upload_image(
     filename = f"{uuid.uuid4().hex}{ext}"
     save_file(db, filename, data, file.content_type)
 
-    img = RoomImage(room_id=room.id, filename=filename)
+    img = RoomImage(
+        room_id=room.id, filename=filename, is_cover=not bool(room.images)
+    )  # Ảnh đầu tiên mặc định là ảnh bìa
     db.add(img)
     db.commit()
     db.refresh(img)
-    return ImageOut(id=img.id, filename=img.filename, url=f"/uploads/{img.filename}")
+    return ImageOut(
+        id=img.id, filename=img.filename, url=f"/uploads/{img.filename}", is_cover=img.is_cover
+    )
 
 
 @router.delete("/{room_id}/images/{image_id}", status_code=204)
@@ -265,6 +284,39 @@ def delete_image(
     ).first()
     if img is None:
         raise HTTPException(status_code=404, detail="Không tìm thấy hình ảnh.")
+
+    if img.is_cover:
+        # Nếu xóa ảnh bìa mà phòng còn ảnh khác, chuyển ảnh bìa sang ảnh còn lại đầu tiên.
+        remaining = (
+            db.query(RoomImage)
+            .filter(RoomImage.room_id == room.id, RoomImage.id != img.id)
+            .order_by(RoomImage.id)
+            .all()
+        )
+        if remaining:
+            remaining[0].is_cover = True
+
     delete_file(db, img.filename)
     db.delete(img)
     db.commit()
+
+
+@router.put("/{room_id}/cover", response_model=RoomDetail)
+def set_room_cover(
+    room_id: int,
+    body: RoomCoverUpdate,
+    db: Session = Depends(get_db),
+    admin=Depends(get_current_admin),
+):
+    """Đặt ảnh bìa (ảnh đại diện) cho phòng mục Chỉnh sửa phòng."""
+    room = _get_room_or_404(db, room_id)
+    img = db.query(RoomImage).filter(
+        RoomImage.id == body.image_id, RoomImage.room_id == room.id
+    ).first()
+    if img is None:
+        raise HTTPException(status_code=404, detail="Không tìm thấy hình ảnh.")
+    for i in room.images:
+        i.is_cover = i.id == img.id
+    db.commit()
+    db.refresh(room)
+    return _to_detail(room)

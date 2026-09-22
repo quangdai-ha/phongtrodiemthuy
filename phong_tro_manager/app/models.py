@@ -64,6 +64,7 @@ class RoomImage(Base):
     id = Column(Integer, primary_key=True, index=True)
     room_id = Column(Integer, ForeignKey("rooms.id"), nullable=False)
     filename = Column(String(255), nullable=False)
+    is_cover = Column(Boolean, default=False, nullable=False)  # Ảnh bìa (đại diện) của phòng
     created_at = Column(DateTime, default=datetime.utcnow)
 
     room = relationship("Room", back_populates="images")

@@ -293,15 +293,36 @@ function getTags() {
 }
 
 /* ---------- Editor hình ảnh ---------- */
+async function setCover(imgId) {
+  if (!currentRoomId) return;
+  try {
+    await api(`/api/rooms/${currentRoomId}/cover`, {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify({ image_id: imgId }),
+    });
+    toast("Đã đặt ảnh bìa.", "success");
+    const room = await api(`/api/rooms/${currentRoomId}`);
+    renderImageEditor(room.images || []);
+  } catch (err) {
+    if (err.message !== "401") toast(err.message, "error");
+  }
+}
+
 function renderImageEditor(images) {
   imgEditor.innerHTML = "";
-  images.forEach((img, i) => {
+  images.forEach((img) => {
     const box = document.createElement("div");
-    box.className = "img-box";
+    box.className = "img-box" + (img.is_cover ? " is-cover" : "");
     box.innerHTML = `
-      <img src="${img.url}" alt="Ảnh phòng" />
-      <button class="del" data-id="${img.id}" title="Xóa ảnh">&times;</button>
-      ${i === 0 ? '<span class="main-tag">Ảnh bìa</span>' : ""}`;
+      <div class="img-thumb">
+        <img src="${img.url}" alt="Ảnh phòng" />
+        <button class="del" data-id="${img.id}" title="Xóa ảnh">&times;</button>
+      </div>
+      <button type="button" class="cover-btn ${img.is_cover ? "active" : ""}" data-id="${img.id}"
+        title="${img.is_cover ? "Đây là ảnh bìa hiện tại" : "Chọn ảnh này làm ảnh bìa"}">
+        ${img.is_cover ? "⭐ Ảnh bìa" : "☆ Đặt ảnh bìa"}
+      </button>`;
     imgEditor.appendChild(box);
   });
   imgEditor.querySelectorAll(".del").forEach((btn) => {
@@ -319,6 +340,9 @@ function renderImageEditor(images) {
         if (err.message !== "401") toast(err.message, "error");
       }
     });
+  });
+  imgEditor.querySelectorAll(".cover-btn").forEach((btn) => {
+    btn.addEventListener("click", () => setCover(Number(btn.dataset.id)));
   });
 }
 

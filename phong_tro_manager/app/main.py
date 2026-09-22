@@ -162,6 +162,34 @@ def _migrate(db):
             db.commit()
             print("[seed] Đã thêm cột role cho admins.")
 
+    if "room_images" in insp.get_table_names():
+        cols = {c["name"] for c in insp.get_columns("room_images")}
+        if "is_cover" not in cols:
+            # BOOLEAN có DEFAULT nên SQLite cho phép thêm cột NOT NULL trên bảng cũ
+            db.execute(text("ALTER TABLE room_images ADD COLUMN is_cover BOOLEAN NOT NULL DEFAULT 0"))
+            db.commit()
+            print("[seed] Đã thêm cột is_cover cho room_images.")
+        # Ảnh bìa: đảm bảo mỗi phòng có đúng 1 ảnh bìa.
+        # Với dữ liệu cũ (chưa đánh dấu) thì ảnh đầu tiên (id nhỏ nhất) làm ảnh bìa.
+        rows = db.execute(
+            text("SELECT room_id, MIN(id) AS first_id FROM room_images GROUP BY room_id")
+        ).fetchall()
+        dirty = False
+        for row in rows:
+            cnt = db.execute(
+                text("SELECT COUNT(*) FROM room_images WHERE room_id = :rid AND is_cover = 1"),
+                {"rid": row[0]},
+            ).fetchone()
+            if cnt[0] == 0:
+                db.execute(
+                    text("UPDATE room_images SET is_cover = 1 WHERE id = :iid"),
+                    {"iid": row[1]},
+                )
+                dirty = True
+        if dirty:
+            db.commit()
+            print("[seed] Đã gán ảnh bìa cho các phòng chưa có ảnh bìa.")
+
 
 def seed_data():
     """Tạo bảng, tài khoản admin và dữ liệu phòng mẫu nếu chưa có."""
@@ -198,7 +226,7 @@ def seed_data():
                         content_type="image/svg+xml",
                     )
                 )
-                db.add(RoomImage(room_id=room.id, filename=filename))
+                db.add(RoomImage(room_id=room.id, filename=filename, is_cover=True))
             db.commit()
             print("[seed] Đã tạo dữ liệu phòng mẫu.")
 

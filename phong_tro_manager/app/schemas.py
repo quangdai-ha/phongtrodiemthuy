@@ -9,6 +9,7 @@ class ImageOut(BaseModel):
     id: int
     filename: str
     url: str
+    is_cover: bool = False
 
     model_config = {"from_attributes": True}
 
@@ -46,6 +47,11 @@ class RoomCreate(BaseModel):
     description: str = ""
     equipment: List[str] = Field(default_factory=list)
     status: str = "available"
+
+
+class RoomCoverUpdate(BaseModel):
+    """Bodies để đặt ảnh bìa (ảnh đại diện) cho phòng."""
+    image_id: int
 
 
 class RoomUpdate(BaseModel):

@@ -175,6 +175,29 @@ check("Chan anh > 8MB", r.status_code == 413, r.text)
 r = client.post(f"/api/rooms/{first['id']}/images", headers=H, files={"file": ("a.png", b"\x89PNG\r\n\x1a\n" + b"\x00" * 100, "image/png")})
 check("Upload anh nho OK", r.status_code == 201, r.text)
 
+# 10b. Ảnh bìa (ảnh đại diện): đổi / kiểm tra / xóa
+r = client.get(f"/api/rooms/{first['id']}")
+detail = r.json()
+seed_img = detail["images"][0]
+check("Anh bia mac dinh la anh dau tien", seed_img.get("is_cover") is True, r.text)
+check("Thumbnail theo anh bia", detail.get("thumbnail_url") == seed_img["url"], r.text)
+
+r = client.post(f"/api/rooms/{first['id']}/images", headers=H, files={"file": ("b.png", b"\\x89PNG\\r\\n\\x1a\\n" + b"\\x00" * 100, "image/png")})
+check("Upload anh thu 2", r.status_code == 201 and r.json().get("is_cover") is False, r.text)
+img_b = r.json()
+
+r = client.put(f"/api/rooms/{first['id']}/cover", headers=H, json={"image_id": img_b["id"]})
+check("Dat anh bia la anh thu 2", r.status_code == 200 and r.json()["thumbnail_url"] == img_b["url"], r.text)
+new_first = r.json()["images"][0]
+check("Anh bia dung dau danh sach", new_first["id"] == img_b["id"] and new_first.get("is_cover") is True, r.text)
+
+r = client.put(f"/api/rooms/{first['id']}/cover", headers=H, json={"image_id": 999999})
+check("Cover anh khong ton tai bi chan", r.status_code == 404, r.text)
+
+r = client.delete(f"/api/rooms/{first['id']}/images/{img_b['id']}", headers=H)
+check("Xoa anh bia", r.status_code == 204, r.text)
+r = client.get(f"/api/rooms/{first['id']}")
+check("Anh bia chuyen sang anh con lai", r.json()["thumbnail_url"] == seed_img["url"] and r.json()["images"][0].get("is_cover") is True, r.text)
 # 11. Xóa hết test data
 r = client.delete(f"/api/tenants/{tenant_id}", headers=H)
 check("Xoa khach tro (kem hoa don/hop dong)", r.status_code == 204, r.text)
