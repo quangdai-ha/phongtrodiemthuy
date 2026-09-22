@@ -140,7 +140,22 @@ def create_sample_svg(filename: str, label: str, color: str) -> tuple[str, bytes
 
 
 def _migrate(db):
-    """Thêm các cột mới cho bảng đã tồn tại (nâng cấp schema nhẹ)."""
+    """Thêm các cột mới cho bảng đã tồn tại (nâng cấp schema nhẹ).
+
+    LƯU Ý: mọi câu lệnh ở đây phải chạy được trên CẢ SQLite (máy nhà) và
+    PostgreSQL (Render). PostgreSQL KHÔNG chấp nhận giá trị kiểu số cho cột
+    BOOLEAN:
+      - `... ADD COLUMN is_cover BOOLEAN NOT NULL DEFAULT 0` →
+        DatatypeMismatch: column "is_cover" is of type boolean but default
+        expression is of type integer
+      - `... WHERE is_cover = 1` →
+        operator does not exist: boolean = integer
+    Vì vậy giá trị boolean được viết theo đúng hệ quản trị đang dùng.
+    """
+    is_postgres = engine.dialect.name == "postgresql"
+    bool_true = "TRUE" if is_postgres else "1"
+    bool_false = "FALSE" if is_postgres else "0"
+
     insp = inspect(engine)
     if "site_settings" in insp.get_table_names():
         cols = {c["name"] for c in insp.get_columns("site_settings")}
@@ -165,8 +180,14 @@ def _migrate(db):
     if "room_images" in insp.get_table_names():
         cols = {c["name"] for c in insp.get_columns("room_images")}
         if "is_cover" not in cols:
-            # BOOLEAN có DEFAULT nên SQLite cho phép thêm cột NOT NULL trên bảng cũ
-            db.execute(text("ALTER TABLE room_images ADD COLUMN is_cover BOOLEAN NOT NULL DEFAULT 0"))
+            # Cột NOT NULL thêm vào bảng đã có dữ liệu nên bắt buộc phải có DEFAULT.
+            # Dùng FALSE trên PostgreSQL, 0 trên SQLite (xem giải thích ở đầu hàm).
+            db.execute(
+                text(
+                    "ALTER TABLE room_images "
+                    f"ADD COLUMN is_cover BOOLEAN NOT NULL DEFAULT {bool_false}"
+                )
+            )
             db.commit()
             print("[seed] Đã thêm cột is_cover cho room_images.")
         # Ảnh bìa: đảm bảo mỗi phòng có đúng 1 ảnh bìa.
@@ -177,12 +198,15 @@ def _migrate(db):
         dirty = False
         for row in rows:
             cnt = db.execute(
-                text("SELECT COUNT(*) FROM room_images WHERE room_id = :rid AND is_cover = 1"),
+                text(
+                    "SELECT COUNT(*) FROM room_images "
+                    f"WHERE room_id = :rid AND is_cover = {bool_true}"
+                ),
                 {"rid": row[0]},
             ).fetchone()
             if cnt[0] == 0:
                 db.execute(
-                    text("UPDATE room_images SET is_cover = 1 WHERE id = :iid"),
+                    text(f"UPDATE room_images SET is_cover = {bool_true} WHERE id = :iid"),
                     {"iid": row[1]},
                 )
                 dirty = True

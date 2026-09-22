@@ -204,3 +204,54 @@ DB đã có **dữ liệu thật của chủ** (không còn là dữ liệu mẫ
 3. (Tùy chọn) Thêm ảnh nền mặc định kiểu ảnh thật (JPG) nếu chủ nhà gửi ảnh riêng.
 4. (Tùy chọn) Thêm phòng mẫu với trạng thái `maintenance` để kiểm chứng giao diện thẻ "Đang bảo trì" (hiện 0 phòng bảo trì).
 5. (Tùy chọn) Áp tính thẻ thống kê lọc phòng (tương thích trang khách) đến trang quản trị (`app/static/admin.html` + `admin.js`).
+6. **Sao lưu dữ liệu PostgreSQL về máy** (quan trọng: DB free trên Render sẽ bị xoá sau 30 ngày) — viết script `backup_from_pg.py` tải toàn bộ bảng về file SQLite/JSON để cất giữ.
+7. Trước ngày thứ 30 kể từ lúc tạo DB: nâng cấp PostgreSQL lên gói trả phí **hoặc** chuyển sang dịch vụ miễn phí khác (Neon/Supabase) để không mất dữ liệu.
+
+---
+
+## 9. PHIÊN 22/09/2026 — SỬA LỖI DEPLOY RENDER: POSTGRESQL KHÔNG NHẬN GIÁ TRỊ SỐ CHO CỘT BOOLEAN
+
+### Triệu chứng khi deploy
+Web Service trên Render **thoát ngay khi khởi động** (`Exited with status 3`), log kết thúc bằng:
+
+```
+psycopg2.errors.DatatypeMismatch: column "is_cover" is of type boolean
+  but default expression is of type integer
+HINT: You will need to rewrite or cast the expression.
+[SQL: ALTER TABLE room_images ADD COLUMN is_cover BOOLEAN NOT NULL DEFAULT 0]
+ERROR:   Application startup failed. Exiting.
+```
+
+### Nguyên nhân
+`app/main.py` → `_migrate()` được viết cho **SQLite**: SQLite coi `BOOLEAN` là số nên `DEFAULT 0` chạy được,
+còn **PostgreSQL bắt buộc `DEFAULT FALSE`**. Không chỉ 1 câu: **2 câu ngay sau đó cũng dùng số cho boolean** và
+sẽ lỗi tiếp nếu chỉ sửa câu đầu — `WHERE is_cover = 1` và `SET is_cover = 1` (PostgreSQL báo
+`operator does not exist: boolean = integer`).
+
+### Đã sửa (chỉ 1 file: `app/main.py`)
+- `_migrate()` giờ dò `engine.dialect.name` → sinh `bool_true` / `bool_false` = `TRUE`/`FALSE` khi chạy PostgreSQL,
+  `1`/`0` khi chạy SQLite; dùng cho cả 3 câu lệnh (ALTER … DEFAULT, WHERE … =, SET … =).
+- Thêm ghi chú cảnh báo ngay đầu `_migrate()` để lần sau thêm cột boolean mới không mắc lại lỗi này.
+- Các câu `ALTER TABLE site_settings/admins` khác đã rà lại: **tương thích cả SQLite và PostgreSQL**.
+
+### Kiểm chứng (chạy trên PostgreSQL THẬT bằng `pgserver` nhúng + SQLite)
+| Bộ test | Nội dung | Kết quả |
+|---------|----------|---------|
+| `_pgtest/pg_migration_test.py` | Tái hiện đúng lỗi Render (`DEFAULT 0` bị PostgreSQL chặn), xoá cột `is_cover` như DB cũ rồi chạy lại `seed_data()` + kiểm tra backfill ảnh bìa | **20/20 đạt** |
+| `_pgtest/pg_app_startup_test.py` | App khởi động thật trên PostgreSQL (`lifespan` → `seed_data`), `/api/rooms`, đăng nhập admin, đổi ảnh bìa, tải ảnh từ bảng `stored_files` | **12/12 đạt** |
+| `_pgtest/sqlite_migration_test.py` | Migration trên SQLite (máy nhà) — xoá cột rồi thêm lại + backfill | **15/15 đạt** |
+| `smoke_test.py` | Toàn bộ tính năng (SQLite) | **56/56 đạt** |
+
+### Cách đưa bản sửa lên Render (làm ngay)
+1. GitHub → repo → **Add file → Upload files** → chọn `app/main.py` (bản mới, ghi đè) → **Commit changes**.
+2. Render tự deploy lại (auto-deploy). Mở tab **Logs**, phải thấy đúng thứ tự:
+   `[seed] Đã thêm cột is_cover cho room_images.` → `[seed] Đã gán ảnh bìa cho các phòng chưa có ảnh bìa.`
+   → `Application startup complete.` (và **không** còn `Application startup failed. Exiting.`).
+3. Mở link `https://<ten-app>.onrender.com` kiểm tra: trang khách hiện phòng + ảnh bìa, đăng nhập được trang quản trị (`/admin`).
+
+### ⚠️ CẢNH BÁO gói miễn phí Render (đọc kỹ trước khi dùng cho khách thật)
+- **PostgreSQL free HẾT HẠN sau 30 ngày** kể từ lúc tạo. Hết hạn có 14 ngày để nâng cấp lên gói trả phí; quá hạn Render **xoá database và toàn bộ dữ liệu**. **Không có backup** cho bản free.
+- Dung lượng tối đa **1 GB**; chỉ được 1 database free cho mỗi workspace.
+- Web Service free **tự "ngủ" khi không có khách** → lần truy cập đầu tiên chậm vài chục giây (sau đó nhanh trở lại); Render có thể **restart bất cứ lúc nào**; không dùng được SSH/one-off jobs/persistent disk.
+- Vì vậy: cần **sao lưu dữ liệu về máy định kỳ** (xem việc #6 ở trên) và cân nhắc gói trả phí trước khi đưa khách thuê nhà dùng thật.
+
