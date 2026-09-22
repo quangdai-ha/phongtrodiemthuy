@@ -1,7 +1,7 @@
 # 📒 GHI CHÚ CÔNG VIỆC — Xóm trọ Sự Bình
 
 > File này **lưu trạng thái toàn bộ công việc** để phiên sau tiếp tục hoàn thiện.
-> Cập nhật ngày: **21/09/2026** — đây là bản ghi hiện tại, phần "Việc cần làm tiếp" ở cuối là các hướng chưa làm.
+> Cập nhật ngày: **22/09/2026** — đây là bản ghi hiện tại, phần "Việc cần làm tiếp" ở cuối là các hướng chưa làm.
 
 ---
 
@@ -166,6 +166,7 @@ DB đã có **dữ liệu thật của chủ** (không còn là dữ liệu mẫ
 | 9 | **Bấm thẻ thống kê để lọc phòng (trang khách)** | 4 thẻ thống kê (Tổng số phòng / Phòng trống / Phòng đã ở / Đang bảo trì) giờ **bấm được**. Bấm thẻ nào thì danh sách phòng lọc theo đúng trạng thái đó (`/api/rooms?status=...`), thẻ đang chọn được tô sáng + có viền màu riêng, trang tự cuộn xuống mục "Danh sách phòng". Đồng bộ 2 chiều với dropdown lọc trạng thái: chọn dropdown cũng cập nhật highlight thẻ, bấm ✕ Xóa lọc trả về "Tổng số phòng". Thẻ có `data-status` (tổng = `""`), hỗ trợ phím Enter/Space, tăng cache-busting lên `v=20260921`. |
 | 10 | **Sửa lỗi "văng khỏi màn hinh cài đặt khi nhập nhanh" (trang quản trị)** | Người nhập nhanh thông tin (đơn giá, điện thoại, địa chỉ...) thoi bấm **Enter vô tình** → trình duyệt tự submit form → handler lưu + đóng modal ngay → "bị văng". Xử: listener `keydown` capture tầ document chặn (`preventDefault`) Enter trong input/select nằm trong `.modal` (trừ textarea & nút); **Ctrl/Cmd+Enter vẫn submit** (lưu nhanh). Ngoài ra: `api()` khi **401** gọi `closeAllModals()` (đóng settings/form/tenant/bill/contract-modal) trước `showLogin()`. File sửa: `app/static/js/admin.js`, cache-busting admin.html → `admin.js?v=20260921`. |
 | 11 | **Không đóng modal khi bấm/rê chuột ra ngoài cửa sổ (sửa lỗi "văng khi sửa phần mô tả phòng")** | Thao tác "nhấn giữ + rê chuột chọn văn bản rồi thả RA NGOÀI khung popup" (hoặc vô tình chạm nền tối trên điện thoại) phát một `click` trên `.modal-overlay` → handler cũ `if (e.target === overlay) close...` đóng modal ngay → mất toàn bộ dữ liệu đang sửa (VD đang gõ mô tả phòng thì "bị văng"). Xử: xóa handler đóng-khi-bấm-nền-tối ở cả 5 modal (form/settings/tenant/bill/contract-modal) — chỉ đóng bằng nút ✕ / Hủy (riêng tenant/bill/contract vẫn có ESC). File sửa: `app/static/js/admin.js`, cache-busting admin.html → `admin.js?v=20260922`. |
+| 12 | **Chọn ảnh bìa (ảnh đại diện) cho phòng — modal chỉnh sửa phòng (22/09/2026)** | Trước đây ảnh bìa = ảnh đầu tiên mặc định. Giờ admin **tự chọn** được. Backend: thêm cột `is_cover` (bool) cho bảng `room_images` (`app/models.py`) + migration tự động `ALTER TABLE` trong `_migrate()` (`app/main.py`) + **backfill** đánh dấu ảnh đầu tiên (MIN id) của từng phòng làm ảnh bìa. Endpoint mới `PUT /api/rooms/{id}/cover` (body `{"image_id": N}`, chỉ admin, schema `RoomCoverUpdate` trong `app/schemas.py`) — đặt ảnh làm bìa và tự bỏ cờ các ảnh khác cùng phòng. `_to_detail()` trả `is_cover` cho từng ảnh, **xếp ảnh bìa lên đầu** (`_cover_first()`), `thumbnail_url` ưu tiên ảnh bìa (trang khách tự hiện đúng ảnh bìa, đã có sẵn). Upload ảnh đầu tiên của phòng vẫn tự thành ảnh bìa; **xóa ảnh bìa → tự chuyển** ảnh bìa cho ảnh còn lại đầu tiên. Giao diện admin (`admin.html` + `admin.js`): mỗi ảnh có nút `☆ Đặt ảnh bìa` / `⭐ Ảnh bìa` (nút `setCover`), ảnh bìa hiện tại viền xanh (CSS `.img-box.is-cover`), bấm là tự lưu + tải lại danh sách ảnh. Cache-busting: `style.css?v=20260923` + `admin.js?v=20260923` (admin.html), `style.css?v=20260923` (index.html). File sửa: `app/models.py`, `app/main.py`, `app/schemas.py`, `app/routers/rooms.py`, `app/static/js/admin.js`, `app/static/css/style.css`, `app/static/admin.html`, `app/static/index.html`, `smoke_test.py`. |
 
 ### Trạng thái kỹ thuật cuối phiên
 - ✅ **Smoke test: 48/48 đạt / 0 lỗi** (`python -W ignore smoke_test.py`).
@@ -174,6 +175,9 @@ DB đã có **dữ liệu thật của chủ** (không còn là dữ liệu mẫ
 - ✅ Thẻ thống kê trang khách kiểm chứng: API lọc trạng thái đúng (7 tổng / 4 trống / 3 đã ở / 0 bảo trì), JS/CSS `v=20260921` phục vụ đúng.
 - ✅ Sửa "văng khỏi modal khi nhập nhanh" (admin): balance JS 0/0/0, `admin.js?v=20260921` phục vụ HTTP 200, thẻ script admin.html đã tăng `v=`.
 - ✅ Sửa "văng khi sửa mô tả phòng / bấm nền tối": xóa 5 handler đóng-khi-bấm-overlay (form/settings/tenant/bill/contract), `admin.js?v=20260922` phục vụ HTTP 200.
+- ✅ **Smoke test: 56/56 đạt / 0 lỗi** — thêm **8 check ảnh bìa** (ảnh đầu mặc định là ảnh bìa, thumbnail theo ảnh bìa, đổi ảnh bìa sang ảnh 2, ảnh bìa đứng đầu danh sách, chặn 404 khi đặt ảnh không tồn tại, xóa ảnh bìa tự chuyển cho ảnh còn lại).
+- ✅ Migration `is_cover` chạy trên DB thật `data/phongtro.db`: **7 phòng có ảnh → 7/7 có đúng 1 ảnh bìa** (không phòng nào thiếu / trùng cờ bìa).
+- ✅ Khởi động server thật (uvicorn không reload) thành công: `_migrate()` + backfill in đúng log, API `/api/rooms` và asset `v=20260923` (admin.js, style.css) đều HTTP 200.
 
 ### QUAN TRỌNG — vấn đề server & cách khởi động
 - ⚠️ **Auto-reload (`run.py`) đã bị lỗi ở máy này**: uvicorn reloader tạo **"zombie" process** giữ port 8000 và **không nạp code mới** (dính bản cũ). Đã phát hiện 3 process python cùng lúc.
